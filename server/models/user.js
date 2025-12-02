@@ -13,6 +13,14 @@ const userSchema = new mongoose.Schema({
   passwordHash: {
     type: String,
   },
+
+  accountTypes:{
+    type: String,
+    enum:['REGISTERED','GUEST'],
+    default:'REGISTERED'
+  },
+
+
   role : {
     type : String ,
     enum : ['customer' , 'admin'],
