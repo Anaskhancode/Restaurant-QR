@@ -1,7 +1,9 @@
 import express from "express";
+import dbConnect from "./config/database.js";
 
 const app = express();
 
+dbConnect();
 
 app.get("/", (req, res) => {
   res.send("Hello from Express using import!");
