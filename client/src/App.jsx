@@ -1,10 +1,10 @@
 import React from 'react'
+import Login from './pages/Login'
+
 
 const App = () => {
   return (
-    <div>
-      <h1 className='bg-red-500'>React</h1>
-    </div>
+    <Login/>
   )
 }
 

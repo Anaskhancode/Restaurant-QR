@@ -1,7 +1,8 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
-import { name } from "ejs";
+
+
 
 export const register = async (req, res) => {
   try {
@@ -57,6 +58,12 @@ export const Login = async (req, res) => {
       role: user.role,
     });
 
+
+    user.refreshToken=refreshToken
+    user.refreshTokenExpiresTime= new Date(Date.now()+7*24*60*60*1000);
+    user.lastlogin=new Date();
+    await user.save();
+
     res.status(200).json({
       data: user,
       accessToken,
@@ -64,7 +71,7 @@ export const Login = async (req, res) => {
     });
 
 
-    
+
   } catch (error) {
     res.status(500).json({
       message: error.message,
