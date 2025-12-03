@@ -6,10 +6,13 @@ import Welcome from './pages/welcome'
 
 const App = () => {
   return (
-    
+    <>
     <Welcome/>
-    // <Login/>
-    // <Register/>
+    
+    
+    {/* <Login/> */}
+     {/* <Register/> */}
+    </>
   )
 }
 
