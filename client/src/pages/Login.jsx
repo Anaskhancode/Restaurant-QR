@@ -1,10 +1,14 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/authSlice.js";
-import { Mail, Lock } from "lucide-react";
-
+import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { Link, useNavigate } from 'react-router-dom'
 const Login = () => {
     const dispatch = useDispatch();
+    const { loading, error } = useSelector((state) => state.auth);
+
+    const navigate=useNavigate();
+
     const [data, setData] = useState({
         email: "",
         password: "",
@@ -19,14 +23,16 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(login(data));
+        dispatch(login(data)).unwrap().then(()=>{
+            navigate('/')
+        })
     };
 
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black p-6">
 
             {/* Background Restaurant Image */}
-            <div 
+            <div
                 className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=1500&q=80')] 
                 bg-cover bg-center opacity-20"
             />
@@ -44,6 +50,15 @@ const Login = () => {
                 <p className="text-center text-gray-300 mt-2 mb-8">
                     Continue your dining experience 🍽️
                 </p>
+
+                {error && (
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+                            <span className="text-red-400 text-xs">!</span>
+                        </div>
+                        <p className="text-red-400 text-sm">{error}</p>
+                    </div>
+                )}
 
                 <form className="space-y-6" onSubmit={handleSubmit}>
 
@@ -84,20 +99,35 @@ const Login = () => {
                     {/* Login Button */}
                     <button
                         type="submit"
+                        disabled={loading}
                         className="w-full bg-yellow-400 text-black font-semibold py-3 rounded-xl 
-                        hover:bg-yellow-300 transition-all text-lg shadow-md"
+                        hover:bg-yellow-300 transition-all text-lg shadow-md
+                        flex items-center justify-center gap-2"
                     >
-                        Login
+                        {loading ? (
+                            <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <span>Signing in...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>Sign In</span>
+                                <ArrowRight className="w-5 h-5" />
+                            </>
+                        )}
                     </button>
+
 
                 </form>
 
                 {/* Footer */}
                 <p className="text-center text-gray-300 mt-6">
                     Don’t have an account?{" "}
-                    <span className="text-yellow-400 font-semibold cursor-pointer hover:underline">
-                        Create one →
-                    </span>
+                    <Link to="/register">
+                        <span className="text-yellow-400 font-semibold cursor-pointer hover:underline">
+                            Create one →
+                        </span>
+                    </Link>
                 </p>
             </div>
         </div>

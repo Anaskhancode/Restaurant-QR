@@ -1,12 +1,50 @@
 import React from "react";
 import { User, Mail, Phone, Lock, Plus } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { register } from '../redux/authSlice.js';
+import { useState } from "react";
 
 const Register = () => {
+
+    const dispatch = useDispatch()
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        phone: '',
+    });
+
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const navigate= useNavigate()
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    }
+
+
+    const handleConfirmPasswordChange = (e) => {
+        setConfirmPassword(e.target.value);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('Form submitted (UI only):', formData);
+        dispatch(register(formData))
+        navigate('/login')
+    };
+
+
+
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black p-6">
 
             {/* Background Restaurant Image Overlay */}
-            <div 
+            <div
                 className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1500&q=80')] 
                 bg-cover bg-center opacity-20"
             />
@@ -28,7 +66,7 @@ const Register = () => {
                     </p>
                 </div>
 
-                <form className="space-y-7">
+                <form onSubmit={handleSubmit} className="space-y-7">
 
                     {/* 2-column inputs */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -41,6 +79,9 @@ const Register = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter your full name"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
                                     className="w-full pl-11 pr-4 py-3 bg-black/40 border border-gray-700 
                                     rounded-xl focus:ring-2 focus:ring-yellow-400 outline-none text-gray-200"
                                 />
@@ -55,6 +96,9 @@ const Register = () => {
                                 <input
                                     type="email"
                                     placeholder="Enter your email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
                                     className="w-full pl-11 pr-4 py-3 bg-black/40 border border-gray-700 
                                     rounded-xl focus:ring-2 focus:ring-yellow-400 outline-none text-gray-200"
                                 />
@@ -74,6 +118,9 @@ const Register = () => {
                                 <input
                                     type="tel"
                                     placeholder="Enter your phone number"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleChange}
                                     className="w-full pl-11 pr-4 py-3 bg-black/40 border border-gray-700 
                                     rounded-xl focus:ring-2 focus:ring-yellow-400 outline-none text-gray-200"
                                 />
@@ -88,6 +135,9 @@ const Register = () => {
                                 <input
                                     type="password"
                                     placeholder="Enter your password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     className="w-full pl-11 pr-4 py-3 bg-black/40 border border-gray-700 
                                     rounded-xl focus:ring-2 focus:ring-yellow-400 outline-none text-gray-200"
                                 />
@@ -105,6 +155,9 @@ const Register = () => {
                             <input
                                 type="password"
                                 placeholder="Confirm your password"
+                                name="confirmPassword"
+                                value={confirmPassword}
+                                onChange={handleConfirmPasswordChange}
                                 className="w-full pl-11 pr-4 py-3 bg-black/40 border border-gray-700 
                                 rounded-xl focus:ring-2 focus:ring-yellow-400 outline-none text-gray-200"
                             />
@@ -115,7 +168,7 @@ const Register = () => {
                     <div className="flex items-center gap-2">
                         <input type="checkbox" className="w-4 h-4 accent-yellow-400" />
                         <p className="text-sm text-gray-300">
-                            I agree to the <span className="text-yellow-400 cursor-pointer">Terms</span> 
+                            I agree to the <span className="text-yellow-400 cursor-pointer">Terms</span>
                             & <span className="text-yellow-400 cursor-pointer">Privacy Policy</span>
                         </p>
                     </div>
@@ -133,9 +186,11 @@ const Register = () => {
                     {/* Login Link */}
                     <p className="text-center text-gray-300 mt-4">
                         Already have an account?{" "}
-                        <span className="text-yellow-400 font-semibold cursor-pointer hover:underline">
-                            Sign in →
-                        </span>
+                        <Link to="/login">
+                            <span className="text-yellow-400 font-semibold cursor-pointer hover:underline">
+                                Sign in →
+                            </span>
+                        </Link>
                     </p>
 
                 </form>
