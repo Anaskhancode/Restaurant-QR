@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/authSlice.js";
-import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { Mail, Lock, ArrowRight, Loader2, UtensilsCrossed } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom'
 const Login = () => {
     const dispatch = useDispatch();
     const { loading, error } = useSelector((state) => state.auth);
 
-    const navigate=useNavigate();
+    const navigate = useNavigate();
 
     const [data, setData] = useState({
         email: "",
@@ -23,7 +23,7 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(login(data)).unwrap().then(()=>{
+        dispatch(login(data)).unwrap().then(() => {
             navigate('/')
         })
     };
@@ -42,7 +42,18 @@ const Login = () => {
 
             {/* Login Card */}
             <div className="relative bg-black/60 backdrop-blur-xl text-white border border-gray-800 shadow-2xl rounded-3xl p-10 w-full max-w-md">
-
+                {/* logo section */}
+                <div className="flex items-center gap-3 justify-center mt-4 mb-4 cursor-pointer">
+                    <div className="w-10 h-10 rounded-full bg-gray-800/50 border border-gray-700/50 flex items-center justify-center">
+                        <UtensilsCrossed className="w-6 h-6 text-gray-200" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold text-white">ElegantBites</h2>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">
+                            Restaurant Management
+                        </p>
+                    </div>
+                </div>
                 {/* Heading */}
                 <h2 className="text-3xl font-extrabold text-center tracking-wide text-yellow-400 drop-shadow-lg">
                     Welcome Back

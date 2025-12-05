@@ -47,6 +47,10 @@ export const Login = async (req, res) => {
     const isPasswordMatch = await bcrypt.compare(password, user.passwordHash);
     // console.log(isPasswordMatch);
 
+    if (!isPasswordMatch) {
+      return res.status(400).json({messsage:'Password do not match, Please try again'})
+    }
+
     const accessToken = generateAccessToken({
       name: user.name,
       email: user.email,

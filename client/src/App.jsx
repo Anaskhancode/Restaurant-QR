@@ -6,6 +6,7 @@ import Navbar from './pages/Navbar'
 import Homepage from './pages/Homepage';
 import ProtectRoutes from './components/ProtectedRoutes';
 import OpenRoutes from './components/OpenRoutes';
+import Welcome from './pages/Welcome';
 
 
 
@@ -13,7 +14,7 @@ import OpenRoutes from './components/OpenRoutes';
 const App = () => {
   return (
     <>
-    <Navbar/>
+    {/* <Navbar/> */}
     <Router>
       <Routes>
 
@@ -22,6 +23,14 @@ const App = () => {
             <Homepage/>
           </ProtectRoutes>
           }/>
+
+          <Route path='/welcome' element={
+            <OpenRoutes>
+              <Welcome/>
+            </OpenRoutes>
+            }/>
+
+
         <Route path='/login'element={
           <OpenRoutes>
 
@@ -34,9 +43,10 @@ const App = () => {
             <Register/>
           </OpenRoutes>
           }/>
+
+          
       </Routes>
     </Router>
-    {/* <Welcome/> */}
     
     
     

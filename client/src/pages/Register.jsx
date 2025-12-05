@@ -1,5 +1,5 @@
 import React from "react";
-import { User, Mail, Phone, Lock, Plus } from "lucide-react";
+import { User, Mail, Phone, Lock, Plus, UtensilsCrossed } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import { register } from '../redux/authSlice.js';
@@ -16,7 +16,7 @@ const Register = () => {
     });
 
     const [confirmPassword, setConfirmPassword] = useState('');
-    const navigate= useNavigate()
+    const navigate = useNavigate()
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -56,6 +56,18 @@ const Register = () => {
             <div className="relative bg-black/60 border border-gray-800 backdrop-blur-xl shadow-2xl text-white 
                 rounded-3xl p-10 w-full max-w-3xl">
 
+                {/* logo section */}
+                <div className="flex items-center gap-3 justify-center mt-4 mb-4 cursor-pointer">
+                    <div className="w-10 h-10 rounded-full bg-gray-800/50 border border-gray-700/50 flex items-center justify-center">
+                        <UtensilsCrossed className="w-6 h-6 text-gray-200" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold text-white">ElegantBites</h2>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">
+                            Restaurant Management
+                        </p>
+                    </div>
+                </div>
                 {/* Heading */}
                 <div className="text-center mb-8">
                     <h2 className="text-4xl font-extrabold tracking-wide text-yellow-400 drop-shadow-lg">
