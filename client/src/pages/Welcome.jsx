@@ -1,8 +1,18 @@
 import React from "react";
 import { LogIn, UserPlus, User, Star, Gift, Shield, Clock, UtensilsCrossed } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Welcome = () => {
+
+     const navigate = useNavigate();
+
+  const handleContinueAsGuest = () => {
+    // You can add guest logic here, for now just navigate to homepage
+    // or set a guest flag in localStorage
+    localStorage.setItem('guestMode', 'true');
+    navigate('/');
+  };
+
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black p-6">
 
@@ -51,7 +61,9 @@ const Welcome = () => {
                         </button>
                     </Link>
 
-                    <button className="w-full flex items-center justify-center gap-3 bg-gray-800 text-gray-200 py-3 rounded-xl text-lg font-semibold border border-gray-700 hover:bg-gray-700 transition">
+                    <button
+                     onClick={handleContinueAsGuest}
+                     className="w-full flex items-center justify-center gap-3 bg-gray-800 text-gray-200 py-3 rounded-xl text-lg font-semibold border border-gray-700 hover:bg-gray-700 transition">
                         <User size={20} />
                         Continue as Guest
                     </button>

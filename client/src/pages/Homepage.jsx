@@ -1,7 +1,16 @@
 import React from 'react'
 import Navbar from './Navbar'
+import { useEffect } from 'react'
+import axios from 'axios'
 
 const Homepage = () => {
+  useEffect(()=>{
+    axios.get('http://localhost:3000/menu',{
+      headers:{
+        Authorization:`Bearer ${localStorage.getItem('accessToken')}`,
+      }
+    })
+  },[])
   return (
     <>
     <Navbar/>
