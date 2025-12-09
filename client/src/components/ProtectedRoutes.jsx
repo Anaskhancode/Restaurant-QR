@@ -1,8 +1,9 @@
 import React from 'react'
-import { Navigate} from 'react-router-dom';
+import { Navigate, Outlet} from 'react-router-dom';
+import AuthenticatedLayout from './AuthenticatedLayout';
 
-function ProtectRoutes({ children }) {
-    console.log(children)
+function ProtectRoutes() {      //{ children }
+    // console.log(children)
     const accessToken = localStorage.getItem('accessToken');
     console.log(accessToken)
     if (!accessToken) {
@@ -12,9 +13,12 @@ function ProtectRoutes({ children }) {
     //     return <Navigate to='/'/>
     // }
     return (
-        <div>
-            {children}
-        </div>
+        
+        <AuthenticatedLayout>
+        {/* {children} */}
+        <Outlet/>
+        </AuthenticatedLayout>
+        
     )
 }
 
