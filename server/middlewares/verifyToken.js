@@ -1,9 +1,10 @@
 //middleWares
 import jwt from 'jsonwebtoken'
+import User from '../models/user.js';
 
 
 
-const verifyToken=(req,res,next)=>{
+const verifyToken=async(req,res,next)=>{
     try {
         // console.log(req.headers.authorization);
         if (req.headers.authorization) {
@@ -11,13 +12,19 @@ const verifyToken=(req,res,next)=>{
             console.log(token);
            const decoded= jwt.verify(token,'9XOHWYtF2uV9Ur858CIrT33MTAhPg0LFuAOixcbDgVPMmdYBQEKfjxADbRIR8tC')
            console.log(decoded);
-           req.user=decoded
-            
+
+            const userData= await User.findById(decoded.id).select('-passwordHash')
+            // console.log(userData);
+
+           req.user=userData
+            next()            
         }
 
         
     } catch (error) {
-        
+    res.status(500).json({
+        message : error.message
+    })
     }
 }
 export default verifyToken

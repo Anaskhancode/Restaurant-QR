@@ -55,11 +55,13 @@ export const Login = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      id: user._id,
     });
     const refreshToken = generateRefreshToken({
       name: user.name,
       email: user.email,
       role: user.role,
+      id: user._id,
     });
 
 
