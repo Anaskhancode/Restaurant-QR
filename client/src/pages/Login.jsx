@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/authSlice.js";
 import { Mail, Lock, ArrowRight, Loader2, UtensilsCrossed } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom'
+import { useToast } from "../context/ToastContext.jsx";
 const Login = () => {
     const dispatch = useDispatch();
+    const toast=useToast()
     const { loading, error } = useSelector((state) => state.auth);
 
     const navigate = useNavigate();
@@ -24,6 +26,7 @@ const Login = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         dispatch(login(data)).unwrap().then(() => {
+            toast.success('Login successfully !')
             navigate('/')
         })
     };

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-// import { logout } from '../redux/authSlice';
+import { logout } from '../redux/authSlice';
+import { guestout } from '../redux/guestSlice'
 import { UtensilsCrossed, User, LogOut, Menu, X, ChevronDown } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
@@ -12,11 +13,18 @@ const AuthenticatedLayout = () => {
   const { name, email, role } = useSelector((state) => state.auth);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  const sessionToken=localStorage.getItem('sessionToken')
   const handleLogout = () => {
-    // dispatch(logout());
+    if (sessionToken) {
+      dispatch(guestout());
+    toast.success('guestid out successfully');
+    navigate('/welcome');
+    }else{
+      dispatch(logout());
     toast.success('Logged out successfully');
     navigate('/login');
+    }
+    
   };
 
   return (
@@ -129,9 +137,9 @@ const AuthenticatedLayout = () => {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-gray-800 bg-gray-900/95 backdrop-blur-sm">
             <div className="px-4 py-4 space-y-2">
-              <a href="#" className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors">
+              {localStorage.getItem('role') === 'admin'   ? <a href="#" className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors">
                 Dashboard
-              </a>
+              </a>  : null}
               <a href="#" className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors">
                 Menu
               </a>
@@ -160,7 +168,7 @@ const AuthenticatedLayout = () => {
       </header>
 
      
-      <main className="w-full px-4 sm:px-6 lg:px-8 py-8">
+      <main className="w-full flex-1 p-0">
 
         <Outlet />
       </main>

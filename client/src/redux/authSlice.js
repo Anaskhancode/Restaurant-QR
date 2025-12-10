@@ -32,11 +32,25 @@ const authSlice = createSlice({
     initialState: {
         loading: false,
         error: null,
-        name: null,
-        email: null,
-        role: null,
+        name: localStorage.getItem('name') || null,
+        role: localStorage.getItem('role') || null,
+        email: localStorage.getItem('email') || null,
         accessToken: null,
         refreshToken: null,
+    },
+
+    reducers: {
+        logout: (state) => {
+            state.name = null;
+            state.email = null;
+            state.role = null;
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('name');
+            localStorage.removeItem('role');
+            localStorage.removeItem('email')
+            state.refreshToken = null;
+            state.accessToken = null;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(login.pending, (state, action) => {
@@ -52,6 +66,9 @@ const authSlice = createSlice({
             state.refreshToken = action.payload.refreshToken
             localStorage.setItem('accessToken', action.payload.accessToken)
             localStorage.setItem('refreshToken', action.payload.refreshToken)
+            localStorage.setItem('role', action.payload.data.role);
+            localStorage.setItem('name', action.payload.data.name);
+            localStorage.setItem('email', action.payload.data.email)
             state.loading = false
 
         }).addCase(login.rejected, (state, action) => {
@@ -60,15 +77,16 @@ const authSlice = createSlice({
         }).addCase(register.pending, (state, action) => {
             state.loading = true;
         }).addCase(register.fulfilled, (state, action) => {
-                console.log(action.payload)
-                state.loading = false
-            }).addCase(register.rejected, (state, action) => {
-                console.log(action.payload)
-                state.error = action.payload;
-                state.loading = false
-            });
+            console.log(action.payload)
+            state.loading = false
+        }).addCase(register.rejected, (state, action) => {
+            console.log(action.payload)
+            state.error = action.payload;
+            state.loading = false
+        });
     }
 })
 
 
 export default authSlice.reducer
+export const { logout } = authSlice.actions;

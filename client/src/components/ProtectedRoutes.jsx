@@ -5,10 +5,11 @@ import AuthenticatedLayout from './AuthenticatedLayout';
 function ProtectRoutes() {      //{ children }
     // console.log(children)
     const accessToken = localStorage.getItem('accessToken');
+    const sessionToken=localStorage.getItem('sessionToken')
     console.log(accessToken)
-    if (!accessToken) {
-        return <Navigate to='/welcome' />
-    }
+    if (!accessToken && !sessionToken) {
+    return <Navigate to='/welcome' />
+}
     // if(accessToken){
     //     return <Navigate to='/'/>
     // }

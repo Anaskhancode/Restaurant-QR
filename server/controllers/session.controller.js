@@ -14,6 +14,21 @@ export const session = async (req, res, next) => {
     const sessionToken = crypto.randomBytes(32).toString('hex');
     console.log(sessionToken); //expiry time ?
 
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24);
+    console.log(expiresAt.toLocaleString());
+    //fetch session token 
+    const session = new Session({
+      deviceId,
+      tableNumber,
+      sessionToken,
+      expiresAt,
+    });
+    await session.save();
+
+    successResponse(res, 201, session);
+
+
   }catch(error){
     next(error)
   }

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-function OpenRoutes({ children }) {
+import { Navigate, Outlet } from 'react-router-dom';
+function OpenRoutes() {
   const accessToken = localStorage.getItem('accessToken');
-  if (accessToken) {
+  const sessionToken=localStorage.getItem('sessionToken')
+  if (accessToken || sessionToken) {
     return <Navigate to="/" />;
   }
-  return <div>{children}</div>;
+  return  <Outlet />;
 }
 
 export default OpenRoutes;
