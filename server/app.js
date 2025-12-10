@@ -6,6 +6,10 @@ import sessionRoutes from './routes/session.route.js'
 import cors from 'cors'
 import verifyToken from "./middlewares/verifyToken.js";
 import checkRole from "./middlewares/checkRole.js";
+import menuRoutes from './routes/menu.route.js'
+import dotenv from 'dotenv' ;
+
+dotenv.config() ;
 
 const app = express();
 app.use(cors(
@@ -35,6 +39,7 @@ app.use('/api/v1/auth',authroutes);
 app.use('/api/v1',TableRoutes)
 
 app.use('/api/v1' , sessionRoutes);
+app.use('/api/v1' , menuRoutes)
 
 //here we placed the global error handleer => 
   app.use((err,req,res,next)=>{
