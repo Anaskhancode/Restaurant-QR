@@ -3,8 +3,11 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/authSlice';
 import { guestout } from '../redux/guestSlice'
-import { UtensilsCrossed, User, LogOut, Menu, X, ChevronDown } from 'lucide-react';
+import { UtensilsCrossed, User, LogOut, Menu, X, ChevronDown ,ShoppingCart,Search } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import Footer from './Footer';
+import { setSearchQuery } from '../redux/menuSlice';
+
 
 const AuthenticatedLayout = () => {
   const dispatch = useDispatch();
@@ -14,6 +17,22 @@ const AuthenticatedLayout = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const sessionToken=localStorage.getItem('sessionToken')
+const searchQuery = useSelector((state) => state.menu.searchQuery);
+
+  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery || '');
+ const isAdmin = role === 'admin' || localStorage.getItem('role') === 'admin';
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setLocalSearchQuery(value);
+    dispatch(setSearchQuery(value));
+  };
+
+
+
+
+
+
+
   const handleLogout = () => {
     if (sessionToken) {
       dispatch(guestout());
@@ -28,7 +47,7 @@ const AuthenticatedLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+   <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
     
       <header className="bg-gray-900/50 border-b border-gray-800 sticky top-0 z-40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,26 +58,54 @@ const AuthenticatedLayout = () => {
                 <UtensilsCrossed className="w-5 h-5 text-gray-200" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white">ElegantBites</h2>
+                <h2 className="text-lg font-bold text-white">ElegentBites</h2>
                 <p className="text-[9px] text-gray-400 uppercase tracking-wider">Restaurant Management</p>
               </div>
             </div>
 
          
-            <nav className="hidden md:flex items-center gap-6">
-          {localStorage.getItem('role') === 'admin'   ? <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
-                Dashboard
-              </a>  : null}
-              <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
-                Menu
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
-                Tables
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
-                Orders
-              </a>
-            </nav>
+       
+            <div className="hidden md:flex flex-1 max-w-md mx-8">
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search menu items..."
+                  value={localSearchQuery}
+                  onChange={handleSearchChange}
+                  className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-gray-600 transition-colors"
+                />
+                {localSearchQuery && (
+                  <button
+                    onClick={() => {
+                      setLocalSearchQuery('');
+                      dispatch(setSearchQuery(''));
+                    }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Navbar - only for admin */}
+            {isAdmin && (
+              <nav className="hidden md:flex items-center gap-6">
+                <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Dashboard
+                </a>
+                <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Menu
+                </a>
+                <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Tables
+                </a>
+                <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Orders
+                </a>
+              </nav>
+            )}
 
          
             <div className="flex items-center gap-4">
@@ -73,6 +120,21 @@ const AuthenticatedLayout = () => {
                 ) : (
                   <Menu className="w-6 h-6" />
                 )}
+              </button>
+
+          
+              <button
+                className="relative p-2 text-gray-300 hover:text-white transition-colors"
+                aria-label="Shopping cart"
+                onClick={() => {
+                  // TODO: Navigate to cart or open cart sidebar
+                  console.log('Cart clicked');
+                }}
+              >
+                <ShoppingCart className="w-6 h-6" />
+                <span className="absolute -top-1 -right-1 bg-white text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  0
+                </span>
               </button>
 
        
@@ -137,18 +199,57 @@ const AuthenticatedLayout = () => {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-gray-800 bg-gray-900/95 backdrop-blur-sm">
             <div className="px-4 py-4 space-y-2">
-              {localStorage.getItem('role') === 'admin'   ? <a href="#" className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors">
-                Dashboard
-              </a>  : null}
-              <a href="#" className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors">
-                Menu
-              </a>
-              <a href="#" className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors">
-                Tables
-              </a>
-              <a href="#" className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors">
-                Orders
-              </a>
+              {/* Search Bar for Mobile */}
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search menu items..."
+                  value={localSearchQuery}
+                  onChange={handleSearchChange}
+                  className="w-full pl-10 pr-10 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-gray-600 transition-colors"
+                />
+                {localSearchQuery && (
+                  <button
+                    onClick={() => {
+                      setLocalSearchQuery('');
+                      dispatch(setSearchQuery(''));
+                    }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* Admin only nav items */}
+              {isAdmin && (
+                <>
+                  <a href="#" className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors">
+                    Dashboard
+                  </a>
+                  <a href="#" className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors">
+                    Menu
+                  </a>
+                  <a href="#" className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors">
+                    Tables
+                  </a>
+                  <a href="#" className="block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors">
+                    Orders
+                  </a>
+                </>
+              )}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  // TODO: Navigate to cart or open cart sidebar
+                  console.log('Cart clicked');
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span>Cart (0)</span>
+              </button>
               <div className="pt-4 border-t border-gray-800">
                 <div className="px-3 py-2 mb-2">
                   <p className="text-sm font-semibold text-white">{name || 'User'}</p>
@@ -168,10 +269,11 @@ const AuthenticatedLayout = () => {
       </header>
 
      
-      <main className="w-full flex-1 p-0">
-
-        <Outlet />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
+        { <Outlet />}
       </main>
+
+      <Footer />
     </div>
   );
 };

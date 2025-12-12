@@ -26,4 +26,27 @@ export const createMenu = async (req, res) => {
   }
 };
 
+// Get all menu items
+export const getAllMenuItems = async (req, res, next) => {
+  try {
+    const { category } = req.query;
+    
+    // Build filter object
+    const filter = { isAvailable: true };
+    if (category) {
+      filter.category = category;
+    }
+    
+    const menuItems = await Menu.find(filter).sort({ category: 1, name: 1 });
+    
+    res.status(200).json({
+      success: true,
+      data: menuItems,
+      count: menuItems.length
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 //name ,description ,  price = {req.body};
