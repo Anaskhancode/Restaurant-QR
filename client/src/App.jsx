@@ -7,6 +7,7 @@ import ProtectRoutes from './components/ProtectedRoutes';
 import OpenRoutes from './components/OpenRoutes';
 import Welcome from './pages/Welcome';
 import { ToastProvider } from './context/ToastContext';
+import Cart from './pages/Cart';
 
 const App = () => {
   return (
@@ -17,6 +18,8 @@ const App = () => {
           {/* Protected */}
           <Route element={<ProtectRoutes />}>
             <Route path="/" element={<Homepage />} />
+            <Route path="/cart" element={<Cart/>} />
+
           </Route>
 
           {/* Public (unauthenticated only) */}

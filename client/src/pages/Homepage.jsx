@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchMenuItems, setSelectedCategory } from '../redux/menuSlice';
 import Hero from '../components/Hero';
+import { addToCart } from '../redux/cartSlice';
 
 
 const LoadingSkeleton = () => (
@@ -11,10 +12,10 @@ const LoadingSkeleton = () => (
         key={index}
         className="bg-gray-900/50 border border-gray-800 rounded-lg overflow-hidden animate-pulse"
       >
-     
+
         <div className="h-48 w-full bg-gray-800/50"></div>
-        
-     
+
+
         <div className="p-4 space-y-3">
           <div className="flex items-start justify-between">
             <div className="h-5 w-32 bg-gray-800/50 rounded"></div>
@@ -41,6 +42,24 @@ const Homepage = () => {
   useEffect(() => {
     dispatch(fetchMenuItems(selectedCategory));
   }, [dispatch, selectedCategory, searchQuery]);
+
+  const userId = useSelector((state) => state.auth.userId);
+   console.log(userId);
+
+  const handleAddToCart = (item) => {
+    if (!userId) {
+      alert('Please login to add items to cart');
+      return;
+    }
+
+    dispatch(
+      addToCart({
+        userId,
+        menuItemId: item._id,
+        quantity: 1,
+      })
+    );
+  };
 
   const handleCategoryChange = (category) => {
     dispatch(setSelectedCategory(category));
@@ -94,76 +113,89 @@ const Homepage = () => {
           <p className="text-gray-400">Discover our delicious vegetarian offerings</p>
         </div>
 
-     
-      {categories.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => handleCategoryChange(category)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedCategory === category
+
+        {categories.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryChange(category)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedCategory === category
                   ? 'bg-white text-black'
                   : 'bg-gray-800/50 text-gray-300 hover:bg-gray-800/70 border border-gray-700/50'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-      )}
+                  }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        )}
 
-   
-      {menuItems.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-400">No menu items found</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {menuItems.map((item) => (
-            <div
-              key={item._id}
-              className="bg-gray-900/50 border border-gray-800 rounded-lg overflow-hidden hover:border-gray-700 transition-colors"
-            >
-              {/* Image */}
-              <div className="relative h-48 w-full overflow-hidden">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/400x300?text=No+Image';
-                  }}
-                />
-                {!item.isAvailable && (
-                  <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
-                    Unavailable
+
+        {menuItems.length === 0 ? (
+          <div className="text-center py-12">
+            <h3 className="text-lg font-semibold text-white">
+              No items in this category
+            </h3>
+            <p className="text-gray-400 text-sm">
+              Try selecting a different category
+            </p>
+
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {menuItems.map((item) => (
+              <div
+                key={item._id}
+                className="bg-gray-900/50 border border-gray-800 rounded-lg overflow-hidden hover:border-gray-700 transition-colors"
+              >
+                {/* Image */}
+                <div className="relative h-48 w-full overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = 'https://plus.unsplash.com/premium_photo-1723575638094-7e221d1af1b7?q=80&w=1382&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+                    }}                                    //https://via.placeholder.com/400x300?text=No+Image
+                  />
+                  {!item.isAvailable && (
+                    <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                      Unavailable
+                    </div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-white">{item.name}</h3>
+                    <span className="text-lg font-bold text-white ml-2">
+                      ₹{item.price}
+                    </span>
                   </div>
-                )}
-              </div>
+                  <p className="text-sm text-gray-400 mb-3 line-clamp-2">{item.description}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500 uppercase tracking-wider">
+                      {item.category}
+                    </span>
+                    <button
+                      disabled={!item.isAvailable}
+                      onClick={()=>handleAddToCart(item)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${item.isAvailable
+                        ? 'bg-white text-black hover:bg-gray-100'
+                        : 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                        }`}
+                    >
+                      {item.isAvailable ? 'Add to Cart' : 'Out of Stock'}
+                    </button>
 
-              {/* Content */}
-              <div className="p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-white">{item.name}</h3>
-                  <span className="text-lg font-bold text-white ml-2">
-                    ₹{item.price}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-400 mb-3 line-clamp-2">{item.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 uppercase tracking-wider">
-                    {item.category}
-                  </span>
-                  <button className="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
-                    Add to Cart
-                  </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ app.use('/api/v1',TableRoutes)
 
 app.use('/api/v1' , sessionRoutes);
 app.use('/api/v1' , menuRoutes)
-app.use('/api/v1' , cartRoutes)
+app.use('/api/v1/cart' , cartRoutes)
 
 //here we placed the global error handleer => 
   app.use((err,req,res,next)=>{

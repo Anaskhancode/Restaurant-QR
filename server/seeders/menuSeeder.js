@@ -415,11 +415,9 @@ const seedMenu = async () => {
     await dbConnect();
     console.log('Database connected');
 
-   
     await Menu.deleteMany({});
     console.log('Cleared existing menu items');
 
-   
     const insertedItems = await Menu.insertMany(menuItems);
     console.log(`Successfully seeded ${insertedItems.length} menu items`);
 

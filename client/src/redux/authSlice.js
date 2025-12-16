@@ -32,6 +32,7 @@ const authSlice = createSlice({
     initialState: {
         loading: false,
         error: null,
+        userId: localStorage.getItem('userId') || null,
         name: localStorage.getItem('name') || null,
         role: localStorage.getItem('role') || null,
         email: localStorage.getItem('email') || null,
@@ -44,6 +45,8 @@ const authSlice = createSlice({
             state.name = null;
             state.email = null;
             state.role = null;
+            state.userId=null;
+            localStorage.removeItem('userId')
             localStorage.removeItem('accessToken');
             localStorage.removeItem('name');
             localStorage.removeItem('role');
@@ -59,6 +62,7 @@ const authSlice = createSlice({
 
         }).addCase(login.fulfilled, (state, action) => {
             console.log(action.payload);
+            state.userId=action.payload.data._id
             state.name = action.payload.data.name
             state.email = action.payload.data.email
             state.role = action.payload.data.role
@@ -66,6 +70,7 @@ const authSlice = createSlice({
             state.refreshToken = action.payload.refreshToken
             localStorage.setItem('accessToken', action.payload.accessToken)
             localStorage.setItem('refreshToken', action.payload.refreshToken)
+            localStorage.setItem('userId',action.payload.data._id)
             localStorage.setItem('role', action.payload.data.role);
             localStorage.setItem('name', action.payload.data.name);
             localStorage.setItem('email', action.payload.data.email)

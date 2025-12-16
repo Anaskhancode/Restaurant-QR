@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/authSlice';
 import { guestout } from '../redux/guestSlice'
@@ -27,11 +27,9 @@ const searchQuery = useSelector((state) => state.menu.searchQuery);
     dispatch(setSearchQuery(value));
   };
 
-
-
-
-
-
+   const { items} = useSelector(
+          (state) => state.cart
+      );
 
   const handleLogout = () => {
     if (sessionToken) {
@@ -52,7 +50,8 @@ const searchQuery = useSelector((state) => state.menu.searchQuery);
       <header className="bg-gray-900/50 border-b border-gray-800 sticky top-0 z-40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-
+            <Link className='block' to={'/'}>
+            
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gray-800/50 border border-gray-700/50 flex items-center justify-center">
                 <UtensilsCrossed className="w-5 h-5 text-gray-200" />
@@ -62,6 +61,7 @@ const searchQuery = useSelector((state) => state.menu.searchQuery);
                 <p className="text-[9px] text-gray-400 uppercase tracking-wider">Restaurant Management</p>
               </div>
             </div>
+            </Link>
 
          
        
@@ -122,7 +122,8 @@ const searchQuery = useSelector((state) => state.menu.searchQuery);
                 )}
               </button>
 
-          
+              <Link className='block'to={'/cart'}>
+              
               <button
                 className="relative p-2 text-gray-300 hover:text-white transition-colors"
                 aria-label="Shopping cart"
@@ -133,9 +134,10 @@ const searchQuery = useSelector((state) => state.menu.searchQuery);
               >
                 <ShoppingCart className="w-6 h-6" />
                 <span className="absolute -top-1 -right-1 bg-white text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  0
+                  {items.reduce((acc, i) => acc + i.quantity, 0)}
                 </span>
               </button>
+              </Link>
 
        
               <div className="hidden md:block relative">
@@ -239,7 +241,7 @@ const searchQuery = useSelector((state) => state.menu.searchQuery);
                   </a>
                 </>
               )}
-              <button
+              {/* <button
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   // TODO: Navigate to cart or open cart sidebar
@@ -248,8 +250,8 @@ const searchQuery = useSelector((state) => state.menu.searchQuery);
                 className="w-full flex items-center gap-2 px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors"
               >
                 <ShoppingCart className="w-4 h-4" />
-                <span>Cart (0)</span>
-              </button>
+                <span>Cart({items.reduce((acc, i) => acc + i.quantity, 0)})</span>
+              </button> */}
               <div className="pt-4 border-t border-gray-800">
                 <div className="px-3 py-2 mb-2">
                   <p className="text-sm font-semibold text-white">{name || 'User'}</p>
