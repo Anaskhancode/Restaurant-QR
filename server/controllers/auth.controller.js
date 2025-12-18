@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
+import transporter from "../services/emailService.js";
+import registerTemplate from "../services/templates/registerTemplate.js";
 
 
 
@@ -20,6 +22,19 @@ export const register = async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 12);
     const data = { name, email, phone, passwordHash };
     const newUser = await User.create(data);
+
+
+    //email sent 
+    const info = await transporter.sendMail({
+    from: 'anaskhanofficial005@gmail.com',
+    to: newUser.email,
+    subject: 'User registration',
+    text: registerTemplate(newUser.name , "ElegentBites") // plain‑text body
+     
+   })
+   console.log('mail sent', info.messageId)
+
+
     res.status(201).json({
       messsage: "success",
       data: newUser,
