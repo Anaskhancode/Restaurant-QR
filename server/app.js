@@ -8,6 +8,7 @@ import verifyToken from "./middlewares/verifyToken.js";
 import checkRole from "./middlewares/checkRole.js";
 import menuRoutes from './routes/menu.route.js'
 import cartRoutes from './routes/cart.route.js'
+import coupanRoutes from './routes/coupan.route.js'
 import dotenv from 'dotenv' ;
 
 dotenv.config() ;
@@ -42,6 +43,7 @@ app.use('/api/v1',TableRoutes)
 app.use('/api/v1' , sessionRoutes);
 app.use('/api/v1' , menuRoutes)
 app.use('/api/v1/cart' , cartRoutes)
+app.use('/api/v1',coupanRoutes)
 
 //here we placed the global error handleer => 
   app.use((err,req,res,next)=>{
