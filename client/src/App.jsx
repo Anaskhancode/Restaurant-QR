@@ -8,6 +8,8 @@ import OpenRoutes from './components/OpenRoutes';
 import Welcome from './pages/Welcome';
 import { ToastProvider } from './context/ToastContext';
 import Cart from './pages/Cart';
+import FindYourAccount from './pages/FindYourAccount';
+import ResetPassword from './pages/ResetPassword';
 
 const App = () => {
   return (
@@ -27,6 +29,9 @@ const App = () => {
             <Route path="/welcome" element={<Welcome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/recovery" element={<FindYourAccount />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+
           </Route>
 
         </Routes>

@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useToast } from "../context/ToastContext.jsx";
 const Login = () => {
     const dispatch = useDispatch();
-    const toast=useToast()
+    const toast = useToast()
     const { loading, error } = useSelector((state) => state.auth);
 
     const navigate = useNavigate();
@@ -108,6 +108,9 @@ const Login = () => {
                                 focus:ring-2 focus:ring-yellow-400 outline-none text-gray-200"
                             />
                         </div>
+                        <Link to='/recovery' className="text-xs text-white/80 hover:text-white transition-colors">
+                            Forgot password?
+                        </Link>
                     </div>
 
                     {/* Login Button */}
