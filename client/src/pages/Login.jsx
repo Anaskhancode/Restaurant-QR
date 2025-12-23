@@ -25,11 +25,25 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(login(data)).unwrap().then(() => {
-            toast.success('Login successfully !')
-            navigate('/')
-        })
+
+        dispatch(login(data))
+            .unwrap()
+            .then((res) => {
+                toast.success('Login successfully!');
+
+                const role = res?.user?.role || localStorage.getItem('role');
+
+                if (role === 'admin') {
+                    navigate('/admin/dashboard');
+                } else {
+                    navigate('/');
+                }
+            })
+            .catch((err) => {
+                toast.error(err || 'Login failed');
+            });
     };
+
 
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black p-6">

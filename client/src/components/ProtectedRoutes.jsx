@@ -10,6 +10,10 @@ function ProtectRoutes() {      //{ children }
     if (!accessToken && !sessionToken) {
     return <Navigate to='/welcome' />
 }
+const role = localStorage.getItem('role')
+if(role==='admin'){
+    return <Navigate to='/admin/dashboard'/>
+}
     // if(accessToken){
     //     return <Navigate to='/'/>
     // }

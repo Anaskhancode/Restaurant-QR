@@ -89,24 +89,6 @@ const searchQuery = useSelector((state) => state.menu.searchQuery);
               </div>
             </div>
 
-            {/* Navbar - only for admin */}
-            {isAdmin && (
-              <nav className="hidden md:flex items-center gap-6">
-                <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Dashboard
-                </a>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Menu
-                </a>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Tables
-                </a>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Orders
-                </a>
-              </nav>
-            )}
-
          
             <div className="flex items-center gap-4">
          

@@ -9,7 +9,7 @@ export const fetchMenuItems = createAsyncThunk(
       const url = category && category !== 'All'
         ? `http://localhost:3000/api/v1/menu?category=${category}`
         : 'http://localhost:3000/api/v1/menu';
-      
+
       const res = await axios.get(url);
       return res.data;
     } catch (error) {
@@ -18,6 +18,40 @@ export const fetchMenuItems = createAsyncThunk(
     }
   }
 );
+
+
+export const createMenuItem = createAsyncThunk(
+  'menu/createMenuItem',
+  async (menuData, thunkApi) => {
+    try {
+      const formData = new FormData();
+
+      formData.append('name', menuData.name);
+      formData.append('description', menuData.description);
+      formData.append('price', menuData.price);
+      formData.append('category', menuData.category);
+      formData.append('isAvailable', menuData.isAvailable);
+      formData.append('image', menuData.image);
+
+      const res = await axios.post(
+        'http://localhost:3000/api/v1/menu',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      return res.data.data;
+    } catch (error) {
+      return thunkApi.rejectWithValue(
+        error.response?.data?.message || 'Failed to create menu item'
+      );
+    }
+  }
+);
+
 
 const menuSlice = createSlice({
   name: 'menu',
@@ -52,26 +86,39 @@ const menuSlice = createSlice({
       .addCase(fetchMenuItems.fulfilled, (state, action) => {
         state.loading = false;
         state.allMenuItems = action.payload.data;
-        
+
         // Apply search filter if search query exists
         let filteredItems = action.payload.data;
         if (state.searchQuery) {
           const query = state.searchQuery.toLowerCase();
-          filteredItems = action.payload.data.filter(item => 
+          filteredItems = action.payload.data.filter(item =>
             item.name.toLowerCase().includes(query) ||
             item.description.toLowerCase().includes(query) ||
             item.category.toLowerCase().includes(query)
           );
         }
-        
+
         state.menuItems = filteredItems;
-        
+
         if (state.selectedCategory === 'All') {
           const uniqueCategories = ['All', ...new Set(action.payload.data.map(item => item.category))];
           state.categories = uniqueCategories;
         }
       })
       .addCase(fetchMenuItems.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(createMenuItem.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createMenuItem.fulfilled, (state, action) => {
+        state.loading = false;
+        state.menuItems.unshift(action.payload);
+        state.allMenuItems.unshift(action.payload);
+      })
+      .addCase(createMenuItem.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
