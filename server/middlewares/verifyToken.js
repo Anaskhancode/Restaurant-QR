@@ -1,30 +1,52 @@
-//middleWares
 import jwt from 'jsonwebtoken'
 import User from '../models/user.js';
 
+const verifyToken = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
 
-
-const verifyToken=async(req,res,next)=>{
-    try {
-        // console.log(req.headers.authorization);
-        if (req.headers.authorization) {
-            const token= req.headers.authorization.split(' ')[1];
-            console.log(token);
-           const decoded= jwt.verify(token,'9XOHWYtF2uV9Ur858CIrT33MTAhPg0LFuAOixcbDgVPMmdYBQEKfjxADbRIR8tC')
-           console.log(decoded);
-
-            const userData= await User.findById(decoded.id).select('-passwordHash')
-            // console.log(userData);
-
-           req.user=userData
-            next()            
-        }
-
-        
-    } catch (error) {
-    res.status(500).json({
-        message : error.message
-    })
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        message: 'Unauthorized: Token missing'
+      });
     }
-}
-export default verifyToken
+
+    const token = authHeader.split(' ')[1];
+
+    const decoded = jwt.verify(
+      token,
+      '9XOHWYtF2uV9Ur858CIrT33MTAhPg0LFuAOixcbDgVPMmdYBQEKfjxADbRIR8tC'
+    );
+
+    const userData = await User.findById(decoded.id).select('-passwordHash');
+
+    if (!userData) {
+      return res.status(401).json({
+        message: 'User not found'
+      });
+    }
+
+    req.user = userData;
+    next();
+
+  } catch (error) {
+    // 🔥 JWT specific handling
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        message: 'jwt expired'
+      });
+    }
+
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({
+        message: 'invalid token'
+      });
+    }
+
+    return res.status(500).json({
+      message: 'Internal server error'
+    });
+  }
+};
+
+export default verifyToken;

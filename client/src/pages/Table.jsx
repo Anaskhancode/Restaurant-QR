@@ -1,16 +1,40 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllTables } from '../redux/tableSlice.js';
-import { QrCode, Users, Hash } from 'lucide-react';
+import { fetchAllTables, createTable, clearTableError } from '../redux/tableSlice.js';
+import { QrCode, Users, Hash, Plus } from 'lucide-react';
 
 const AdminTables = () => {
   const dispatch = useDispatch();
 
   const { tables, loading, error } = useSelector((state) => state.table);
 
+  const [tableNumber, setTableNumber] = useState('');
+  const [capacity, setCapacity] = useState('');
+
   useEffect(() => {
+    dispatch(clearTableError())
     dispatch(fetchAllTables());
+    
   }, [dispatch]);
+
+  const handleCreateTable = async (e) => {
+    e.preventDefault();
+
+    if (!tableNumber) return;
+
+    await dispatch(
+      createTable({
+        tableNumber,
+        capacity,
+      })
+    );
+
+    // re-fetch to stay fully in sync
+    dispatch(fetchAllTables());
+
+    setTableNumber('');
+    setCapacity('');
+  };
 
   if (loading) {
     return (
@@ -29,9 +53,44 @@ const AdminTables = () => {
   }
 
   return (
-    <div className="p-6 text-white">
+    <div className="p-6 text-white max-w-7xl mx-auto">
       <h1 className="text-2xl font-semibold mb-6">Restaurant Tables</h1>
 
+      {/* ================= ADD TABLE FORM ================= */}
+      <form
+        onSubmit={handleCreateTable}
+        className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-8
+                   flex flex-col sm:flex-row gap-4"
+      >
+        <input
+          type="number"
+          placeholder="Table Number"
+          value={tableNumber}
+          onChange={(e) => setTableNumber(e.target.value)}
+          className="bg-gray-800 px-4 py-2 rounded outline-none text-white"
+          required
+        />
+
+        <input
+          type="number"
+          placeholder="Capacity (optional)"
+          value={capacity}
+          onChange={(e) => setCapacity(e.target.value)}
+          className="bg-gray-800 px-4 py-2 rounded outline-none text-white"
+        />
+
+        <button
+          type="submit"
+          className="flex items-center justify-center gap-2
+                     bg-green-600 px-6 py-2 rounded
+                     hover:bg-green-700 transition"
+        >
+          <Plus size={16} />
+          Add Table
+        </button>
+      </form>
+
+      {/* ================= TABLE LIST ================= */}
       {tables.length === 0 ? (
         <p className="text-gray-400">No tables found.</p>
       ) : (
@@ -39,7 +98,8 @@ const AdminTables = () => {
           {tables.map((table) => (
             <div
               key={table._id}
-              className="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-gray-600 transition"
+              className="bg-gray-900 border border-gray-800 rounded-xl p-5
+                         hover:border-gray-600 transition"
             >
               {/* Header */}
               <div className="flex justify-between items-center mb-4">
@@ -70,7 +130,7 @@ const AdminTables = () => {
               <div className="space-y-2 text-sm text-gray-300">
                 <div className="flex items-center gap-2">
                   <Hash size={16} />
-                  <span>{table.qrSlug}</span>
+                  <span className="break-all">{table.qrSlug}</span>
                 </div>
 
                 <div className="flex items-center gap-2">

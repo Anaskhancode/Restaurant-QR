@@ -21,21 +21,26 @@ const Cart = () => {
         if (userId) dispatch(fetchCartByUser(userId));
     }, [dispatch, userId]);
 
-    const handleIncrease = (menuItemId) => {
-        dispatch(increaseQuantity({ userId, menuItemId }));
+    const handleIncrease = async (menuItemId) => {
+        await dispatch(increaseQuantity({ userId, menuItemId }));
+        dispatch(fetchCartByUser(userId));
     };
 
-    const handleDecrease = (menuItemId) => {
-        dispatch(decreaseQuantity({ userId, menuItemId }));
+    const handleDecrease = async (menuItemId) => {
+        await dispatch(decreaseQuantity({ userId, menuItemId }));
+        dispatch(fetchCartByUser(userId));
     };
 
-    const handleRemove = (menuItemId) => {
-        dispatch(removeItemFromCart({ userId, menuItemId }));
+    const handleRemove = async (menuItemId) => {
+        await dispatch(removeItemFromCart({ userId, menuItemId }));
+        dispatch(fetchCartByUser(userId));
     };
 
-    const handleClearCart = () => {
-        dispatch(clearCart({ userId }));
+    const handleClearCart = async () => {
+        await dispatch(clearCart({ userId }));
+        dispatch(fetchCartByUser(userId));
     };
+
 
     if (loading) {
         return <p className="text-center mt-10 text-white">Loading cart...</p>;

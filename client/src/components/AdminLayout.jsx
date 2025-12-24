@@ -71,10 +71,10 @@ const AdminLayout = () => {
 
         {/* Navigation (scrollable only inside sidebar) */}
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-          <SidebarLink to="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" />
-          <SidebarLink to="/admin/menu" icon={BookOpen} label="Menu" />
-          <SidebarLink to="/admin/orders" icon={ShoppingBag} label="Orders" />
-          <SidebarLink to="/admin/tables" icon={Table} label="Tables" />
+          <SidebarLink to="/admin/dashboard" icon={LayoutDashboard} onClick={() => setSidebarOpen(false)} label="Dashboard" />
+          <SidebarLink to="/admin/menu" icon={BookOpen} onClick={() => setSidebarOpen(false)} label="Menu" />
+          <SidebarLink to="/admin/orders" icon={ShoppingBag} onClick={() => setSidebarOpen(false)} label="Orders" />
+          <SidebarLink to="/admin/tables" icon={Table} onClick={() => setSidebarOpen(false)} label="Tables" />
         </nav>
 
         {/* Logout (always visible) */}
@@ -133,9 +133,10 @@ const AdminLayout = () => {
 };
 
 /* ---------- Sidebar Link ---------- */
-const SidebarLink = ({ to, icon: Icon, label }) => (
+const SidebarLink = ({ to, icon: Icon, label ,onClick}) => (
   <Link
     to={to}
+    onClick={onClick}
     className="flex items-center gap-3 px-4 py-2
     text-gray-300 hover:text-white hover:bg-gray-800
     rounded-lg transition"

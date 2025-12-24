@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchMenuItems, setSelectedCategory } from '../redux/menuSlice';
 import Hero from '../components/Hero';
 import { addToCart } from '../redux/cartSlice';
-
+import { useToast } from '../context/ToastContext';
 
 const LoadingSkeleton = () => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -38,7 +38,7 @@ const LoadingSkeleton = () => (
 const Homepage = () => {
   const dispatch = useDispatch();
   const { menuItems, categories, loading, error, selectedCategory, searchQuery } = useSelector((state) => state.menu);
-
+  const toast = useToast();
   useEffect(() => {
     dispatch(fetchMenuItems(selectedCategory));
   }, [dispatch, selectedCategory, searchQuery]);
@@ -48,7 +48,7 @@ const Homepage = () => {
 
   const handleAddToCart = (item) => {
     if (!userId) {
-      alert('Please login to add items to cart');
+      toast.success('Please Be a member First');
       return;
     }
 

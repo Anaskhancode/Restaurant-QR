@@ -12,7 +12,8 @@ import { useSelector } from 'react-redux';
 
 
 const Dashboard = () => {
-    // const totalItems = useSelector(state => state.menu.allMenuItems.length);
+    // const totalMenuItems = useSelector(state => state.menu.allMenuItems.length);
+    const totalTables = useSelector(state=>state.table.tables.length);
 const stats = [
   {
     title: 'Total Orders',
@@ -31,7 +32,7 @@ const stats = [
   },
   {
     title: 'Active Tables',
-    value: '12',
+    value: totalTables||'12',
     icon: Table,
   },
 ];

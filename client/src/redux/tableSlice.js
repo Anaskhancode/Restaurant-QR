@@ -68,6 +68,9 @@ const tableSlice = createSlice({
     clearCurrentTable: (state) => {
       state.currentTable = null;
     },
+    clearTableError: (state) => {
+      state.error = null;
+    },
   },
 
   extraReducers: (builder) => {
@@ -113,5 +116,5 @@ const tableSlice = createSlice({
   },
 });
 
-export const { clearCurrentTable } = tableSlice.actions;
+export const { clearCurrentTable , clearTableError } = tableSlice.actions;
 export default tableSlice.reducer;
