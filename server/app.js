@@ -9,8 +9,8 @@ import checkRole from "./middlewares/checkRole.js";
 import menuRoutes from './routes/menu.route.js'
 import cartRoutes from './routes/cart.route.js'
 import coupanRoutes from './routes/coupan.route.js'
+import orderRoutes from './routes/order.route.js'
 import dotenv from 'dotenv' ;
-
 dotenv.config() ;
 
 const app = express();
@@ -44,6 +44,7 @@ app.use('/api/v1' , sessionRoutes);
 app.use('/api/v1' , menuRoutes)
 app.use('/api/v1/cart' , cartRoutes)
 app.use('/api/v1',coupanRoutes)
+app.use('/api/v1',orderRoutes)
 
 //here we placed the global error handleer => 
   app.use((err,req,res,next)=>{
