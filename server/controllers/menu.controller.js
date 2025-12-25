@@ -1,52 +1,97 @@
 import cloudinary from '../config/cloudnary.js';
-import Menu from '../models/menu.js'
-// console.log(cloudinary);
-export const createMenu = async (req, res) => {
-  // how can i access the image path here
-  console.log(req.file);
+import Menu from '../models/menu.js';
 
+/* ================= CREATE MENU ITEM ================= */
+export const createMenu = async (req, res) => {
   try {
-    const filePath = req?.file?.path || null;
-    console.log(filePath);
+    // multer provides file info here
+    const filePath = req?.file?.path;
+
+    if (!filePath) {
+      return res.status(400).json({
+        success: false,
+        message: 'Image file is required',
+      });
+    }
+
+    // upload image to cloudinary
     const result = await cloudinary.uploader.upload(filePath, {
       folder: 'menu',
     });
-    console.log(result);
+
     const menuItem = await Menu.create({
-      ...req.body,
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category,
+      isAvailable: req.body.isAvailable,
       image: result.secure_url,
     });
+
     res.status(201).json({
+      success: true,
       data: menuItem,
-      message: 'New menu item addedd',
+      message: 'New menu item added successfully',
     });
   } catch (error) {
-    console.log(error);
-    
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
-// Get all menu items
+/* ================= GET ALL MENU ITEMS (FILTER + SEARCH + PAGINATION) ================= */
 export const getAllMenuItems = async (req, res, next) => {
   try {
-    const { category } = req.query;
-    
-    // Build filter object
-    const filter = { isAvailable: true };
-    if (category) {
+    const {
+      category = 'All',
+      search = '',
+      page = 1,
+      limit = 9,
+    } = req.query;
+
+    const filter = {};
+
+    // Category filter
+    if (category !== 'All') {
       filter.category = category;
     }
-    
-    const menuItems = await Menu.find(filter).sort({ category: 1, name: 1 });
-    
+
+    // Global search (name + description)
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    // Fetch paginated items + total count in parallel
+    const [items, total] = await Promise.all([
+      Menu.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit)),
+      Menu.countDocuments(filter),
+    ]);
+
+    // Always return full category list
+    const categories = await Menu.distinct('category');
+
     res.status(200).json({
       success: true,
-      data: menuItems,
-      count: menuItems.length
+      data: items,
+      categories: ['All', ...categories],
+      pagination: {
+        totalItems: total,
+        currentPage: Number(page),
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error) {
     next(error);
   }
 };
-
-//name ,description ,  price = {req.body};

@@ -1,25 +1,28 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Fetch all menu items
+/* ================= FETCH MENU ITEMS ================= */
 export const fetchMenuItems = createAsyncThunk(
   'menu/fetchMenuItems',
-  async (category, thunkApi) => {
+  async (
+    { category = 'All', search = '', page = 1, limit = 9 },
+    thunkApi
+  ) => {
     try {
-      const url = category && category !== 'All'
-        ? `http://localhost:3000/api/v1/menu?category=${category}`
-        : 'http://localhost:3000/api/v1/menu';
+      const res = await axios.get('http://localhost:3000/api/v1/menu', {
+        params: { category, search, page, limit },
+      });
 
-      const res = await axios.get(url);
       return res.data;
     } catch (error) {
-      console.log(error);
-      return thunkApi.rejectWithValue(error.response?.data?.message || 'Failed to fetch menu items');
+      return thunkApi.rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch menu items'
+      );
     }
   }
 );
 
-
+/* ================= CREATE MENU ITEM ================= */
 export const createMenuItem = createAsyncThunk(
   'menu/createMenuItem',
   async (menuData, thunkApi) => {
@@ -37,9 +40,7 @@ export const createMenuItem = createAsyncThunk(
         'http://localhost:3000/api/v1/menu',
         formData,
         {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+          headers: { 'Content-Type': 'multipart/form-data' },
         }
       );
 
@@ -52,71 +53,81 @@ export const createMenuItem = createAsyncThunk(
   }
 );
 
-
+/* ================= SLICE ================= */
 const menuSlice = createSlice({
   name: 'menu',
   initialState: {
     menuItems: [],
-    allMenuItems: [], // Store all items for filtering
     categories: [],
-    loading: false,
-    error: null,
+
     selectedCategory: 'All',
     searchQuery: '',
+
+    pagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalItems: 0,
+      limit: 9,
+    },
+
+    loading: false,
+    error: null,
   },
+
   reducers: {
     setSelectedCategory: (state, action) => {
       state.selectedCategory = action.payload;
+      state.pagination.currentPage = 1; // reset page on category change
     },
+
     setSearchQuery: (state, action) => {
       state.searchQuery = action.payload;
+      state.pagination.currentPage = 1; // reset page on search
     },
-    clearMenuItems: (state) => {
+
+    setCurrentPage: (state, action) => {
+      state.pagination.currentPage = action.payload;
+    },
+
+    clearMenu: (state) => {
       state.menuItems = [];
-      state.allMenuItems = [];
       state.categories = [];
     },
   },
+
   extraReducers: (builder) => {
     builder
+      /* ---------- FETCH MENU ---------- */
       .addCase(fetchMenuItems.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchMenuItems.fulfilled, (state, action) => {
         state.loading = false;
-        state.allMenuItems = action.payload.data;
 
-        // Apply search filter if search query exists
-        let filteredItems = action.payload.data;
-        if (state.searchQuery) {
-          const query = state.searchQuery.toLowerCase();
-          filteredItems = action.payload.data.filter(item =>
-            item.name.toLowerCase().includes(query) ||
-            item.description.toLowerCase().includes(query) ||
-            item.category.toLowerCase().includes(query)
-          );
-        }
+        state.menuItems = action.payload.data;
+        state.categories = action.payload.categories;
 
-        state.menuItems = filteredItems;
-
-        if (state.selectedCategory === 'All') {
-          const uniqueCategories = ['All', ...new Set(action.payload.data.map(item => item.category))];
-          state.categories = uniqueCategories;
-        }
+        state.pagination.totalItems =
+          action.payload.pagination.totalItems;
+        state.pagination.totalPages =
+          action.payload.pagination.totalPages;
+        state.pagination.currentPage =
+          action.payload.pagination.currentPage;
       })
       .addCase(fetchMenuItems.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+
+      /* ---------- CREATE MENU ---------- */
       .addCase(createMenuItem.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(createMenuItem.fulfilled, (state, action) => {
         state.loading = false;
         state.menuItems.unshift(action.payload);
-        state.allMenuItems.unshift(action.payload);
+        state.pagination.totalItems += 1;
       })
       .addCase(createMenuItem.rejected, (state, action) => {
         state.loading = false;
@@ -126,4 +137,10 @@ const menuSlice = createSlice({
 });
 
 export default menuSlice.reducer;
-export const { setSelectedCategory, setSearchQuery, clearMenuItems } = menuSlice.actions;
+
+export const {
+  setSelectedCategory,
+  setSearchQuery,
+  setCurrentPage,
+  clearMenu,
+} = menuSlice.actions;

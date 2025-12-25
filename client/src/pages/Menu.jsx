@@ -15,7 +15,12 @@ const AdminMenu = () => {
     selectedCategory,
     loading,
     error,
+    pagination,
+    searchQuery,
   } = useSelector((state) => state.menu);
+
+  // 🔑 LOCAL pagination state (matches your slice)
+  const [page, setPage] = useState(1);
 
   const [form, setForm] = useState({
     name: '',
@@ -26,15 +31,24 @@ const AdminMenu = () => {
     image: null,
   });
 
-   const inputClass = "bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none focus:border-white";
+  const inputClass =
+    'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none focus:border-white';
 
+  /* ================= FETCH MENU ================= */
   useEffect(() => {
-    dispatch(fetchMenuItems(selectedCategory));
-  }, [dispatch, selectedCategory]);
+    dispatch(
+      fetchMenuItems({
+        category: selectedCategory,
+        search: searchQuery,
+        page,
+      })
+    );
+  }, [dispatch, selectedCategory, searchQuery, page]);
 
-  /* ---------------- Handlers ---------------- */
+  /* ================= HANDLERS ================= */
   const handleCategoryChange = (category) => {
     dispatch(setSelectedCategory(category));
+    setPage(1); // reset page
   };
 
   const handleChange = (e) => {
@@ -56,7 +70,47 @@ const AdminMenu = () => {
         isAvailable: true,
         image: null,
       });
+      setPage(1);
     });
+  };
+
+  /* ================= PAGINATION ================= */
+  const Pagination = () => {
+    if (!pagination || pagination.totalPages <= 1) return null;
+
+    return (
+      <div className="flex justify-center gap-2 mt-8">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage((p) => p - 1)}
+          className="px-3 py-1 bg-gray-800 text-white rounded disabled:opacity-40"
+        >
+          Prev
+        </button>
+
+        {[...Array(pagination.totalPages)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setPage(i + 1)}
+            className={`px-3 py-1 rounded ${
+              page === i + 1
+                ? 'bg-white text-black'
+                : 'bg-gray-800 text-gray-300'
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button
+          disabled={page === pagination.totalPages}
+          onClick={() => setPage((p) => p + 1)}
+          className="px-3 py-1 bg-gray-800 text-white rounded disabled:opacity-40"
+        >
+          Next
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -134,7 +188,7 @@ const AdminMenu = () => {
         <div className="mt-4">
           <button
             type="submit"
-            className="bg-white text-black px-6 py-2 rounded-lg font-medium hover:bg-gray-200 transition"
+            className="bg-white text-black px-6 py-2 rounded-lg font-medium hover:bg-gray-200"
           >
             {loading ? 'Adding...' : 'Add Item'}
           </button>
@@ -143,12 +197,7 @@ const AdminMenu = () => {
 
       {/* ================= MENU LIST ================= */}
       <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-white">All Menu Items</h2>
-          <p className="text-gray-400 text-sm">
-            Manage your restaurant menu
-          </p>
-        </div>
+        <h2 className="text-2xl font-bold text-white">All Menu Items</h2>
 
         {/* Categories */}
         {categories.length > 0 && (
@@ -157,10 +206,10 @@ const AdminMenu = () => {
               <button
                 key={category}
                 onClick={() => handleCategoryChange(category)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                className={`px-4 py-2 rounded-lg text-sm ${
                   selectedCategory === category
                     ? 'bg-white text-black'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    : 'bg-gray-800 text-gray-300'
                 }`}
               >
                 {category}
@@ -169,10 +218,9 @@ const AdminMenu = () => {
           </div>
         )}
 
-        {loading && <p className="text-gray-400">Loading menu items...</p>}
+        {loading && <p className="text-gray-400">Loading...</p>}
         {error && <p className="text-red-400">{error}</p>}
 
-        {/* Menu Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {menuItems.map((item) => (
             <div
@@ -195,24 +243,15 @@ const AdminMenu = () => {
                   {item.description}
                 </p>
 
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500 uppercase">
-                    {item.category}
-                  </span>
-                  <span
-                    className={`px-2 py-1 rounded ${
-                      item.isAvailable
-                        ? 'bg-green-500/20 text-green-400'
-                        : 'bg-red-500/20 text-red-400'
-                    }`}
-                  >
-                    {item.isAvailable ? 'Available' : 'Unavailable'}
-                  </span>
-                </div>
+                <span className="text-xs text-gray-500 uppercase">
+                  {item.category}
+                </span>
               </div>
             </div>
           ))}
         </div>
+
+        <Pagination />
       </div>
     </div>
   );
