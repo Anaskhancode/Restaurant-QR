@@ -1,5 +1,5 @@
 import express from 'express';
-import { forgotPassword, Login, register, resetPassword } from '../controllers/auth.controller.js';
+import { forgotPassword, Login, refresh, register, resetPassword } from '../controllers/auth.controller.js';
 import SessionTokenVerfiy from '../middlewares/SessionTokenVerfiy.js';
 
 const router= express.Router();
@@ -17,5 +17,5 @@ router.post('/convert' , SessionTokenVerfiy , (req,res)=>{
     // session.convertedSession = true ;
     // await session.save()
 })
-
+router.post('/refresh' ,   refresh)
 export default router

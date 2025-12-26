@@ -243,9 +243,18 @@ const AdminMenu = () => {
                   {item.description}
                 </p>
 
-                <span className="text-xs text-gray-500 uppercase">
-                  {item.category}
-                </span>
+               <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500 uppercase">{item.category}</span>
+                  <span
+                    className={`text-xs font-semibold px-2 py-1 rounded ${
+                      item.isAvailable
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-red-500/20 text-red-400'
+                    }`}
+                  >
+                    {item.isAvailable ? 'Available' : 'Unavailable'}
+                  </span>
+                </div>
               </div>
             </div>
           ))}

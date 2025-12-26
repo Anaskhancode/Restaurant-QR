@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-
+import api from '../lib/api';
 /* ================= FETCH MENU ITEMS ================= */
 export const fetchMenuItems = createAsyncThunk(
   'menu/fetchMenuItems',
@@ -9,7 +9,7 @@ export const fetchMenuItems = createAsyncThunk(
     thunkApi
   ) => {
     try {
-      const res = await axios.get('http://localhost:3000/api/v1/menu', {
+      const res = await api.get('http://localhost:3000/api/v1/menu', {
         params: { category, search, page, limit },
       });
 

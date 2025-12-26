@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-
+import api from '../lib/api';
 const API_URL = 'http://localhost:3000/api/v1';
+console.log(api);
 
 /* =======================
    ASYNC THUNKS
@@ -26,7 +27,7 @@ export const fetchAllTables = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('accessToken');
-      const res = await axios.get(`${API_URL}/tables`, {
+      const res = await api.get(`${API_URL}/tables`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -43,7 +44,7 @@ export const fetchTableBySlug = createAsyncThunk(
   'tables/fetchTableBySlug',
   async (slug, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API_URL}/tables/${slug}`);
+      const res = await api.get(`${API_URL}/tables/${slug}`);
       return res.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Invalid QR Code');

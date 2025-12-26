@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.js";
+import jwt from "jsonwebtoken"
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
 import transporter from "../services/emailService.js";
 import registerTemplate from "../services/templates/registerTemplate.js";
@@ -188,5 +189,54 @@ export const resetPassword = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+//-------------------Refresh Token update-----------------------
+export const refresh = async (req, res) => {
+  try {
+    //refreshToken in the req.body
+    const { refreshToken } = req.body;
+    let decoded;
+    try {
+      decoded = jwt.verify(
+        refreshToken,
+        '9XOHWYtF2uV9Ur858CIrT33MTAhPg0LFuAOixcbDgVPMmdYBQEKfjxADbRIR8tC'
+      );
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({
+          success: false,
+          error: 'Refresh token expired',
+        });
+      }
+    }
+    console.log(decoded);
+    //step2 => find refresh token in the current user document
+    const user = await User.findOne({ _id: decoded.id });
+    if (!user.refreshToken) {
+      return res.json({
+        success: false,
+        message: 'No refresh token found in db',
+      });
+    }
+    if (user.refreshTokenExpiresTime < new Date()) {
+      return res.send('Refresh token expired');
+    }
+
+    const accessToken = generateAccessToken({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      id: user._id,
+    });
+    res.json({
+      success: true,
+      accessToken,
+    });
+  } catch (error) {
+    res.json({
+      message: error.name,
+    });
   }
 };
