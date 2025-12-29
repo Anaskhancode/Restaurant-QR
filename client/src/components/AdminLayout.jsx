@@ -12,6 +12,8 @@ import {
   LogOut,
   Menu,
   X,
+  CloudUploadIcon,
+  Gift,
 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import Footer from '../components/Footer';
@@ -75,6 +77,7 @@ const AdminLayout = () => {
           <SidebarLink to="/admin/menu" icon={BookOpen} onClick={() => setSidebarOpen(false)} label="Menu" />
           <SidebarLink to="/admin/orders" icon={ShoppingBag} onClick={() => setSidebarOpen(false)} label="Orders" />
           <SidebarLink to="/admin/tables" icon={Table} onClick={() => setSidebarOpen(false)} label="Tables" />
+          <SidebarLink to="/admin/coupans" icon={Gift} onClick={() => setSidebarOpen(false)} label="Coupans" />
         </nav>
 
         {/* Logout (always visible) */}

@@ -135,7 +135,7 @@ const Hero = () => {
                 <div className="absolute -bottom-4 left-3/4 transform -translate-x-1/2 bg-white text-black px-6 py-3 rounded-full shadow-2xl border-2 border-yellow-400/20 animate-bounce-slow z-10">
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-bold whitespace-nowrap">Free Delivery on Orders Above ₹500</span>
+                    <span className="text-sm font-bold whitespace-nowrap">Exciting Offers Available</span>
                   </div>
                 </div>
               </div>

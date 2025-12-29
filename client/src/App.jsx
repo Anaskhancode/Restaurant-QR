@@ -19,6 +19,7 @@ import { ToastProvider } from './context/ToastContext';
 import Dashboard from './pages/Dashboard';
 import AdminMenu from './pages/Menu';
 import AdminTables from './pages/Table';
+import AdminCoupan from './pages/AdminCoupan';
 
 
 const App = () => {
@@ -38,6 +39,7 @@ const App = () => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="menu" element={<AdminMenu />} />
             <Route path="tables" element={<AdminTables />} />
+            <Route path="coupans" element={<AdminCoupan />} />
             {/* <Route path="orders" element={<AdminOrders />} /> */}
           </Route>
 

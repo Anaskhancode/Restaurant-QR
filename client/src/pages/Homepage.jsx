@@ -116,11 +116,10 @@ const Homepage = () => {
               <button
                 key={category}
                 onClick={() => handleCategoryChange(category)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                  selectedCategory === category
-                    ? 'bg-white text-black'
-                    : 'bg-gray-800/50 text-gray-300 border border-gray-700/50'
-                }`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${selectedCategory === category
+                  ? 'bg-white text-black'
+                  : 'bg-gray-800/50 text-gray-300 border border-gray-700/50'
+                  }`}
               >
                 {category}
               </button>
@@ -175,11 +174,10 @@ const Homepage = () => {
                     <button
                       disabled={!item.isAvailable}
                       onClick={() => handleAddToCart(item)}
-                      className={`px-4 py-2 rounded-lg text-sm ${
-                        item.isAvailable
-                          ? 'bg-white text-black'
-                          : 'bg-gray-600 text-gray-300 cursor-not-allowed'
-                      }`}
+                      className={`px-4 py-2 rounded-lg text-sm ${item.isAvailable
+                        ? 'bg-white text-black'
+                        : 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                        }`}
                     >
                       {item.isAvailable ? 'Add to Cart' : 'Out of Stock'}
                     </button>
@@ -195,7 +193,7 @@ const Homepage = () => {
           <div className="flex justify-center items-center gap-4 pt-10">
             <button
               disabled={pagination.currentPage === 1}
-              onClick={() =>
+              onClick={() => {
                 dispatch(
                   fetchMenuItems({
                     category: selectedCategory,
@@ -204,7 +202,12 @@ const Homepage = () => {
                     limit: 9,
                   })
                 )
-              }
+                // scroll to top
+                window.scrollTo({
+                  top: 0,
+                  behavior: 'smooth',
+                });
+              }}
               className="px-4 py-2 bg-gray-800 text-white rounded disabled:opacity-40"
             >
               Previous
@@ -218,7 +221,7 @@ const Homepage = () => {
               disabled={
                 pagination.currentPage === pagination.totalPages
               }
-              onClick={() =>
+              onClick={() => {
                 dispatch(
                   fetchMenuItems({
                     category: selectedCategory,
@@ -227,7 +230,12 @@ const Homepage = () => {
                     limit: 9,
                   })
                 )
-              }
+                // scroll to top
+                window.scrollTo({
+                  top: 0,
+                  behavior: 'smooth',
+                });
+              }}
               className="px-4 py-2 bg-gray-800 text-white rounded disabled:opacity-40"
             >
               Next

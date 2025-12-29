@@ -1,29 +1,72 @@
 import Coupan from './../models/coupan.js';
+import User from '../models/user.js'
+import Cart from '../models/cart.js'
 
 export const getAllCoupans = async (req, res) => {
   try {
-    // filter only active coupons : it is optional
-    const { isActive } = req.query;
+    const { cartTotal } = req.query;
+    const userId = req.user.id;
 
-    const filter = {};
-    if (isActive !== undefined) {
-      filter.isActive = isActive === 'true';
+    const user = await User.findById(userId);
+    console.log('fetched from database', user);
+    const cart = await Cart.findOne({ userId });
+    let totalCartPrice;
+    if (cart) {
+      totalCartPrice = cart.totalCartPrice;
     }
+    console.log(totalCartPrice);
 
-    const coupans = await Coupan.find(filter).sort({ createdAt: -1 });
+    const allCoupans = await Coupan.find();
+    console.log(allCoupans);
 
-    res.status(200).json({
-      success: true,
-      count: coupans.length,
-      coupans,
+    const CoupansAfterCalculation = allCoupans.map((coupans) => {
+      //calculate isAvailable flag
+      const isCartPriceMeetsMinOrderAmount =
+        totalCartPrice > coupans.minOrderAmount;
+      const isCoupanIsValid =
+        new Date() > coupans.validFrom && new Date() < coupans.validTo;
+      const isUserFirstTime = user.totalOrders === 0;
+      const isCoupanIsForFirstOrder = coupans.isFirstOrder;
+      console.log(coupans.code, isCartPriceMeetsMinOrderAmount);
+
+      const isAvailable =
+        isCartPriceMeetsMinOrderAmount &&
+        isCoupanIsValid &&
+        (isCoupanIsForFirstOrder ? isUserFirstTime : true);
+
+      let discountAmount;
+      if (coupans.discountType) {
+        if (coupans.discountType === 'fixedAmount') {
+          discountAmount = totalCartPrice - coupans.discountValue;
+        }
+        if (coupans.discountType === 'percentage') {
+          discountAmount = (totalCartPrice * coupans.discountValue) / 100;
+        }
+        if (coupans.maxDiscount && discountAmount > coupans.maxDiscount) {
+          discountAmount = coupans.maxDiscount;
+        }
+      }
+      return {
+        _id: coupans._id,
+
+        finalAmount: totalCartPrice - discountAmount,
+        code: coupans.code,
+        discountType: coupans.discountType,
+        description: coupans.description,
+        discountAmount,
+        isFirstOrder: coupans.isFirstOrder,
+        minOrderAmount: coupans.minOrderAmount,
+        validFrom: coupans.validFrom,
+        validTo: coupans.validTo,
+        isAvailable,
+        isCartPriceMeetsMinOrderAmount,
+        totalCartPrice,
+      };
     });
-  } catch (error) {
-    console.error('Error fetching coupans:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while fetching coupans',
+    res.json({
+      CoupansAfterCalculation,
     });
-  }
+  } catch (error) {}
 };
 
 export const registerCoupan = async (req, res) => {
@@ -36,7 +79,8 @@ export const registerCoupan = async (req, res) => {
       validTo,
       usageLimit,
       minOrderAmount,
-      description,
+      discountValue,
+      description
     } = req.body;
 
     if (!code || !discountType) {
@@ -59,7 +103,7 @@ export const registerCoupan = async (req, res) => {
 
       usageLimit: usageLimit || null,
       minOrderAmount: minOrderAmount || 0,
-
+      discountValue:discountValue||0,
       description: description || '',
       isActive: true,
       usedCount: 0,

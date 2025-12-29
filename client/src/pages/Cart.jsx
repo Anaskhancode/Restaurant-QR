@@ -7,6 +7,7 @@ import {
     decreaseQuantity,
     clearCart,
 } from '../redux/cartSlice';
+import { fetchCoupans } from '../redux/coupanSlice';
 import { Trash2, Plus, Minus } from 'lucide-react';
 
 const Cart = () => {
@@ -17,30 +18,38 @@ const Cart = () => {
         (state) => state.cart
     );
 
+    const { coupans } = useSelector((state) => state.coupan);
+
     useEffect(() => {
-        if (userId) dispatch(fetchCartByUser(userId));
+        if (userId) {
+            dispatch(fetchCartByUser(userId));
+            dispatch(fetchCoupans());
+        }
     }, [dispatch, userId]);
 
     const handleIncrease = async (menuItemId) => {
         await dispatch(increaseQuantity({ userId, menuItemId }));
         dispatch(fetchCartByUser(userId));
+        dispatch(fetchCoupans());
     };
 
     const handleDecrease = async (menuItemId) => {
         await dispatch(decreaseQuantity({ userId, menuItemId }));
         dispatch(fetchCartByUser(userId));
+        dispatch(fetchCoupans());
     };
 
     const handleRemove = async (menuItemId) => {
         await dispatch(removeItemFromCart({ userId, menuItemId }));
         dispatch(fetchCartByUser(userId));
+        dispatch(fetchCoupans());
     };
 
     const handleClearCart = async () => {
         await dispatch(clearCart({ userId }));
         dispatch(fetchCartByUser(userId));
+        dispatch(fetchCoupans());
     };
-
 
     if (loading) {
         return <p className="text-center mt-10 text-white">Loading cart...</p>;
@@ -63,9 +72,8 @@ const Cart = () => {
                                 <div
                                     key={menu._id || index}
                                     className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between
-             p-4 rounded-xl bg-gray-900/60 border border-gray-800"
+                  p-4 rounded-xl bg-gray-900/60 border border-gray-800"
                                 >
-                                    {/* LEFT */}
                                     <div className="flex items-center gap-4">
                                         <img
                                             src={menu.image || '/placeholder.png'}
@@ -78,7 +86,6 @@ const Cart = () => {
                                         </div>
                                     </div>
 
-                                    {/* QUANTITY */}
                                     <div className="flex items-center gap-4">
                                         <button
                                             onClick={() => handleDecrease(menu._id)}
@@ -97,7 +104,6 @@ const Cart = () => {
                                         </button>
                                     </div>
 
-                                    {/* PRICE + REMOVE */}
                                     <div className="flex items-center justify-between md:justify-end gap-4">
                                         <p className="font-semibold">
                                             ₹{menu.price * item.quantity}
@@ -111,38 +117,106 @@ const Cart = () => {
                                         </button>
                                     </div>
                                 </div>
-
                             );
                         })}
                     </div>
 
-                    {/* ================= RIGHT - CART SUMMARY ================= */}
-                    <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-6 h-fit sticky top-24">
-                        <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
+                    {/* ================= RIGHT - COUPANS FIRST ================= */}
+                    <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-6 h-fit sticky top-24 space-y-6">
 
-                        <div className="space-y-3 text-gray-300">
-                            <div className="flex justify-between">
-                                <span>Total Items</span>
-                                <span>
-                                    {items.reduce((acc, i) => acc + i.quantity, 0)}
-                                </span>
-                            </div>
+                        {/* COUPANS */}
+                        <div>
+                            <h4 className="text-lg font-semibold mb-3">Available Coupons</h4>
 
-                            <div className="flex justify-between text-lg font-bold text-white">
-                                <span>Total Price</span>
-                                <span>₹{totalCartPrice}</span>
+                            {!coupans || coupans.length === 0 ? (
+                                <p className="text-gray-400 text-sm">No coupons available</p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {coupans.map((coupan) => (
+                                        <div
+                                            key={coupan._id}
+                                            className={`p-3 rounded-lg border
+                        ${coupan.isAvailable
+                                                    ? 'border-green-600 bg-green-900/20'
+                                                    : 'border-gray-700 bg-gray-800/40 opacity-60'}
+                      `}
+                                        >
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="font-semibold">{coupan.code}</p>
+                                                    <p className="text-sm text-gray-400">
+                                                        {coupan.description}
+                                                    </p>
+                                                    <p className="text-sm mt-1">
+                                                        Save ₹{coupan.discountAmount}
+                                                    </p>
+                                                    <p className="text-sm mt-1">
+                                                        Coupon expires at:{' '}
+                                                        {new Date(coupan.validTo).toLocaleString('en-IN', {
+                                                            day: '2-digit',
+                                                            month: 'short',
+                                                            year: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                        })}
+                                                    </p>
+
+
+
+                                                </div>
+
+                                                <button
+                                                    disabled={!coupan.isAvailable}
+                                                    className={`px-3 py-1 text-sm rounded-md
+                            ${coupan.isAvailable
+                                                            ? 'bg-green-600 hover:bg-green-700'
+                                                            : 'bg-gray-600 cursor-not-allowed'}
+                          `}
+                                                >
+                                                    Apply
+                                                </button>
+                                            </div>
+
+                                            {!coupan.isAvailable && (
+                                                <p className="text-xs text-red-400 mt-1">
+                                                    Min order ₹{coupan.minOrderAmount} required
+                                                </p>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ORDER SUMMARY */}
+                        <div>
+                            <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
+
+                            <div className="space-y-3 text-gray-300">
+                                <div className="flex justify-between">
+                                    <span>Total Items</span>
+                                    <span>
+                                        {items.reduce((acc, i) => acc + i.quantity, 0)}
+                                    </span>
+                                </div>
+
+                                <div className="flex justify-between text-lg font-bold text-white">
+                                    <span>Total Price</span>
+                                    <span>₹{totalCartPrice}</span>
+                                </div>
                             </div>
                         </div>
 
+                        {/* ACTION BUTTONS */}
                         <button
                             onClick={handleClearCart}
-                            className="mt-6 w-full bg-red-500 py-3 rounded-lg hover:bg-red-600 transition"
+                            className="w-full bg-red-500 py-3 rounded-lg hover:bg-red-600 transition"
                         >
                             Clear Cart
                         </button>
 
                         <button
-                            className="mt-3 w-full bg-green-600 py-3 rounded-lg hover:bg-green-700 transition"
+                            className="w-full bg-green-600 py-3 rounded-lg hover:bg-green-700 transition"
                         >
                             Checkout
                         </button>
