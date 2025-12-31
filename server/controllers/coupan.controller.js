@@ -27,12 +27,22 @@ export const getAllCoupans = async (req, res) => {
         new Date() > coupans.validFrom && new Date() < coupans.validTo;
       const isUserFirstTime = user.totalOrders === 0;
       const isCoupanIsForFirstOrder = coupans.isFirstOrder;
-      console.log(coupans.code, isCartPriceMeetsMinOrderAmount);
+      // console.log(coupans.code, isCartPriceMeetsMinOrderAmount);
+      // console.log(isUserFirstTime);
+      // console.log(isCoupanIsForFirstOrder);
+      // console.log((coupans.isFirstOrder || isUserFirstTime));
+      
+
+
+      // const isAvailable =
+      //   isCartPriceMeetsMinOrderAmount &&
+      //   isCoupanIsValid &&
+      //   (isCoupanIsForFirstOrder ? isUserFirstTime : true);
 
       const isAvailable =
         isCartPriceMeetsMinOrderAmount &&
         isCoupanIsValid &&
-        (isCoupanIsForFirstOrder ? isUserFirstTime : true);
+        (isCoupanIsForFirstOrder && isUserFirstTime);
 
       let discountAmount;
       if (coupans.discountType) {
@@ -66,7 +76,7 @@ export const getAllCoupans = async (req, res) => {
     res.json({
       CoupansAfterCalculation,
     });
-  } catch (error) {}
+  } catch (error) { }
 };
 
 export const registerCoupan = async (req, res) => {
@@ -103,7 +113,7 @@ export const registerCoupan = async (req, res) => {
 
       usageLimit: usageLimit || null,
       minOrderAmount: minOrderAmount || 0,
-      discountValue:discountValue||0,
+      discountValue: discountValue || 0,
       description: description || '',
       isActive: true,
       usedCount: 0,
@@ -117,6 +127,65 @@ export const registerCoupan = async (req, res) => {
     });
   } catch (error) {
     console.error('Error registering coupan:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+/* ================= APPLY COUPAN ================= */
+export const applyCoupan = async (req, res) => {
+  try {
+    const { code, discountAmount } = req.body;
+    const userId = req.user.id;
+
+    if (!code) {
+      return res.status(400).json({ message: 'Coupan code is required' });
+    }
+
+    /* ---------- Fetch Cart ---------- */
+    const cart = await Cart.findOne({ userId });
+
+    if (!cart || cart.totalCartPrice <= 0) {
+      return res.status(400).json({ message: 'Cart is empty' });
+    }
+
+    const totalCartPrice = cart.totalCartPrice;
+
+    /* ---------- Fetch Coupan (existence only) ---------- */
+    const coupan = await Coupan.findOne({
+      code: code.toUpperCase(),
+      isActive: true,
+    });
+
+    if (!coupan) {
+      return res.status(404).json({ message: 'Invalid coupan code' });
+    }
+
+    /* ---------- Safety Check ---------- */
+    if (discountAmount < 0 || discountAmount > totalCartPrice) {
+      return res.status(400).json({ message: 'Invalid discount amount' });
+    }
+
+    const finalAmount = totalCartPrice - discountAmount;
+
+    /* ---------- Apply Coupan to Cart ---------- */
+    cart.appliedCoupan = coupan.code;
+    cart.discountAmount = discountAmount;
+    cart.finalAmount = finalAmount;
+    cart.minOrderAmountForCoupan = coupan.minOrderAmount;
+    await cart.save();
+
+    /* ---------- Response ---------- */
+    res.status(200).json({
+      success: true,
+      message: 'Coupan applied successfully',
+      code: coupan.code,
+      totalCartPrice,
+      discountAmount,
+      finalAmount,
+    });
+  } catch (error) {
+    console.error('Apply Coupan Error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

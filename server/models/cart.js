@@ -13,13 +13,23 @@ const cartScehma = new mongoose.Schema({
       },
       quantity: {
         type: Number,
-    
+
       }, //comes from ui
     },
   ],
   totalCartPrice: {
     type: Number,
   }, //calculate from backend
+  appliedCoupan: String,
+  discountAmount: {
+    type: Number,
+    default: 0,
+  },
+  finalAmount: Number,
+minOrderAmountForCoupan: {
+  type: Number,
+  default: 0, // used for revalidation
+},
 });
 
 const Cart = mongoose.model('Cart', cartScehma);

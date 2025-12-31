@@ -113,7 +113,9 @@ export const clearCart = async (req, res) => {
 
     cart.items = [];
     cart.totalCartPrice = 0;
-
+    cart.appliedCoupan = null;
+    cart.discountAmount = 0;
+    cart.finalAmount = 0;
     await cart.save();
 
     res.json({ message: 'Cart cleared successfully', cart });
@@ -130,8 +132,15 @@ export const getCartByUser = async (req, res) => {
     const cart = await Cart.findOne({ userId }).populate('items.menuItemId');
 
     if (!cart) {
-      return res.status(200).json({ items: [], totalCartPrice: 0 });
+      return res.status(200).json({ 
+        items: [],
+        totalCartPrice: 0 ,
+        appliedCoupan: null,
+        discountAmount: 0,
+        finalAmount: 0
+      });
     }
+
 
     // Map items to include menuItem key
     const mappedCart = {
@@ -140,6 +149,9 @@ export const getCartByUser = async (req, res) => {
         quantity: item.quantity,
       })),
       totalCartPrice: cart.totalCartPrice,
+      appliedCoupan: cart.appliedCoupan,
+      discountAmount: cart.discountAmount,
+      finalAmount: cart.finalAmount,
     };
 
     res.status(200).json(mappedCart);
@@ -158,4 +170,19 @@ const calculateTotal = async (cart) => {
     }
   }
   cart.totalCartPrice = total;
+  // ✅ Revalidate applied coupon
+  if (cart.appliedCoupan) {
+    if (cart.totalCartPrice < cart.minOrderAmountForCoupan) {
+      // Remove coupon if cart total is below min amount
+      cart.appliedCoupan = null;
+      cart.discountAmount = 0;
+      cart.finalAmount = total;
+    } else {
+      // Keep coupon applied
+      cart.finalAmount = total - cart.discountAmount;
+    }
+  } else {
+    // No coupon applied
+    cart.finalAmount = total;
+  }
 };

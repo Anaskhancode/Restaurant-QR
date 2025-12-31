@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
  
 const orderSchema = new mongoose.Schema({
   orderNumber: {
-    type: Number,
+    type: String,
     unique: true,
   },
   userId: {
@@ -54,9 +54,16 @@ const orderSchema = new mongoose.Schema({
   customerName: {
     type: String,
   },
+  customerPhone : {
+    type : Number
+  },
   notes: {
     type: String,
   },
+  paymentMethod: {
+      type: String,
+      enum: ['CASH', 'CARD', 'UPI'],
+    },
 });
  
 const Order = mongoose.model('Order', orderSchema);

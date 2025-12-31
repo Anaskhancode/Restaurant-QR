@@ -5,7 +5,7 @@ import api from '../lib/api';
 /* =======================
    API BASE CONFIG
 ======================= */
-const API_URL ="http://localhost:3000/api/v1"
+const API_URL = "http://localhost:3000/api/v1";
 
 const authHeader = () => ({
   headers: {
@@ -25,7 +25,9 @@ export const fetchCoupans = createAsyncThunk(
       const res = await api.get(`${API_URL}/coupans`, authHeader());
       return res.data.CoupansAfterCalculation;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch coupans');
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch coupans'
+      );
     }
   }
 );
@@ -42,7 +44,28 @@ export const registerCoupan = createAsyncThunk(
       );
       return res.data.coupan;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to register coupan');
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to register coupan'
+      );
+    }
+  }
+);
+
+// ✅ APPLY COUPAN
+export const applyCoupan = createAsyncThunk(
+  'coupans/apply',
+  async ({ code, discountAmount }, { rejectWithValue }) => {
+    try {
+      const res = await api.post(
+        `${API_URL}/applyCoupan`,
+        { code, discountAmount },
+        authHeader()
+      );
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to apply coupan'
+      );
     }
   }
 );
@@ -55,6 +78,7 @@ const coupanSlice = createSlice({
   name: 'coupans',
   initialState: {
     coupans: [],
+    appliedCoupan: null,   // 👈 new
     loading: false,
     error: null,
     success: false,
@@ -64,6 +88,7 @@ const coupanSlice = createSlice({
       state.loading = false;
       state.error = null;
       state.success = false;
+      state.appliedCoupan = null;
     },
   },
   extraReducers: (builder) => {
@@ -95,6 +120,20 @@ const coupanSlice = createSlice({
         state.coupans.push(action.payload);
       })
       .addCase(registerCoupan.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      /* ===== APPLY COUPAN ===== */
+      .addCase(applyCoupan.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(applyCoupan.fulfilled, (state, action) => {
+        state.loading = false;
+        state.appliedCoupan = action.payload;
+      })
+      .addCase(applyCoupan.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
