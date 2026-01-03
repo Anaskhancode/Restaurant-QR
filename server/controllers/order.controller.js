@@ -62,6 +62,7 @@ export const createOrder = async (req, res, next) => {
     const finalAmount = cartItems.finalAmount;
     //------------tableNumber,customeremail,customerName,customerPhone,Notes,paymentMethod----------
     //from ui 
+    
     // res.json({
     //   orderNumber,
     //   userId,
@@ -94,13 +95,13 @@ export const createOrder = async (req, res, next) => {
       notes,
       paymentMethod,
     });
-    // /* ---------- Clear Cart After Order ---------- */
-    // cartItems.items = [];
-    // cartItems.totalCartPrice = 0;
-    // cartItems.discountAmount = 0;
-    // cartItems.appliedCoupon = null;
-    // cartItems.finalAmount = 0;
-    // await cartItems.save();
+    /* ---------- Clear Cart After Order ---------- */
+    cartItems.items = [];
+    cartItems.totalCartPrice = 0;
+    cartItems.discountAmount = 0;
+    cartItems.appliedCoupon = null;
+    cartItems.finalAmount = 0;
+    await cartItems.save();
     await User.findByIdAndUpdate(
       userId,
       { $inc: { totalOrders: 1 } }

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import {
   fetchCartByUser,
   removeItemFromCart,
@@ -245,10 +246,11 @@ const Cart = () => {
             >
               Clear Cart
             </button>
-
+            <Link to={'/checkout'} className='block'>
             <button className="w-full bg-green-600 py-3 rounded-lg hover:bg-green-700">
               Checkout
             </button>
+            </Link>
           </div>
         </div>
       )}

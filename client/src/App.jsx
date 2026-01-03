@@ -14,6 +14,7 @@ import OpenRoutes from './components/OpenRoutes';
 
 import AdminLayout from './components/AdminLayout';
 
+import Checkout from './pages/Checkout';
 import { ToastProvider } from './context/ToastContext';
 // Admin pages
 import Dashboard from './pages/Dashboard';
@@ -32,6 +33,7 @@ const App = () => {
           <Route element={<ProtectRoutes />}>
             <Route path="/" element={<Homepage />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
           </Route>
 
           {/* ---------------- AUTHENTICATED ADMIN ---------------- */}
@@ -50,6 +52,7 @@ const App = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/recovery" element={<FindYourAccount />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
+            
           </Route>
 
         </Routes>

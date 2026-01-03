@@ -5,14 +5,16 @@ import menuReducer from './menuSlice.js'
 import cartReducer from './cartSlice.js'
 import tableReducer from './tableSlice.js'
 import coupanReducer from './coupanSlice.js'
+import orderReducer from './orderSlice.js'
 const store=configureStore({
     reducer: {
         auth: authReducer,
-        guest:guestReducer,
+        guest: guestReducer,
         menu : menuReducer,
         cart : cartReducer,
         table: tableReducer,
-        coupan: coupanReducer
+        coupan: coupanReducer,
+        order: orderReducer
     }
 })
 
