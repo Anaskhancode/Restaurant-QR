@@ -15,6 +15,7 @@ import OpenRoutes from './components/OpenRoutes';
 import AdminLayout from './components/AdminLayout';
 
 import Checkout from './pages/Checkout';
+import Orders from './pages/Orders';
 import { ToastProvider } from './context/ToastContext';
 // Admin pages
 import Dashboard from './pages/Dashboard';
@@ -34,6 +35,7 @@ const App = () => {
             <Route path="/" element={<Homepage />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path='/orders' element={<Orders/>}/>
           </Route>
 
           {/* ---------------- AUTHENTICATED ADMIN ---------------- */}

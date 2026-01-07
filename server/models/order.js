@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
- 
+
 const orderSchema = new mongoose.Schema({
   orderNumber: {
     type: String,
@@ -54,20 +54,37 @@ const orderSchema = new mongoose.Schema({
   customerName: {
     type: String,
   },
-  customerPhone : {
-    type : Number
+  customerPhone: {
+    type: Number
   },
   notes: {
     type: String,
   },
   paymentMethod: {
-      type: String,
-      enum: ['CASH', 'Razorpay'],
-    },
+    type: String,
+    enum: ['CASH', 'Razorpay'],
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'failed', 'success', 'refund'],
+  },
+  orderStatus: {
+    type: String,
+    enum: ['pending', 'preparing', 'ready', 'served'],
+    default: 'pending',
+  },
+  razorPayOrderId: {
+    type: String,
+  },
+  razorPayPaymentId: {
+    type: String,
+  },
+  razorPaySignature: {
+    type: String,
+  },
 });
- 
+
 const Order = mongoose.model('Order', orderSchema);
- 
+
 export default Order;
- 
- 
+

@@ -1,7 +1,7 @@
 import React from 'react';
 import { UtensilsCrossed, ArrowRight, Star, Clock, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
+import { Link } from 'react-router-dom';
 const Hero = () => {
   const navigate = useNavigate();
 
@@ -78,15 +78,14 @@ const Hero = () => {
                 <span>Explore Menu</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
+              <Link to={'/orders'} className='block'>
+              
               <button
-                onClick={() => {
-                  // TODO: Navigate to reservations or contact
-                  console.log('Reserve table');
-                }}
                 className="px-8 py-3 bg-gray-800/50 border border-gray-700 text-white font-semibold rounded-lg hover:bg-gray-800/70 transition-all duration-200"
               >
-                Reserve a Table
+                See Orders
               </button>
+              </Link>
             </div>
 
 
