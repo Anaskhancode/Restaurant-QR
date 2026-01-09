@@ -314,3 +314,81 @@ export const fetchRazorpayOrder = async (req, res, next) => {
     next(error);
   }
 };
+
+
+/* ================= ADMIN: FETCH ALL ORDERS ================= */
+export const fetchAllOrders = async (req, res, next) => {
+  try {
+    const orders = await Order.find()
+      .sort({ createdAt: -1 }) // latest first
+      .populate('items.menuItemId', 'name image price')
+      .populate('userId', 'name email');
+
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+/* ================= ADMIN: LAST 5 ORDERS ================= */
+export const fetchLastFiveOrders = async (req, res, next) => {
+  try {
+    const orders = await Order.find()
+      .sort({ createdAt: -1 })   // newest first
+      .limit(5)                 // only 5 orders
+      .populate('items.menuItemId', 'name price')
+      .populate('userId', 'name');
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+/* ================= ADMIN: UPDATE ORDER STATUS ================= */
+export const updateOrderStatus = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { orderStatus } = req.body;
+
+    // Validate status
+    const validStatuses = ['pending', 'preparing', 'ready', 'served'];
+    if (!validStatuses.includes(orderStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid order status',
+      });
+    }
+
+    // Update order
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { orderStatus },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Order status updated successfully',
+      order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

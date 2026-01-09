@@ -10,6 +10,7 @@ import menuRoutes from './routes/menu.route.js'
 import cartRoutes from './routes/cart.route.js'
 import coupanRoutes from './routes/coupan.route.js'
 import orderRoutes from './routes/order.route.js'
+import adminRoutes from './routes/admin.route.js'
 import dotenv from 'dotenv' ;
 dotenv.config() ;
 
@@ -45,6 +46,7 @@ app.use('/api/v1' , menuRoutes)
 app.use('/api/v1/cart' , cartRoutes)
 app.use('/api/v1',coupanRoutes)
 app.use('/api/v1',orderRoutes)
+app.use('/api/v1',adminRoutes)
 
 //here we placed the global error handleer => 
   app.use((err,req,res,next)=>{

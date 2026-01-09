@@ -6,6 +6,7 @@ import cartReducer from './cartSlice.js'
 import tableReducer from './tableSlice.js'
 import coupanReducer from './coupanSlice.js'
 import orderReducer from './orderSlice.js'
+import adminReducer from './adminSlice.js'
 const store=configureStore({
     reducer: {
         auth: authReducer,
@@ -14,7 +15,8 @@ const store=configureStore({
         cart : cartReducer,
         table: tableReducer,
         coupan: coupanReducer,
-        order: orderReducer
+        order: orderReducer,
+        admin: adminReducer
     }
 })
 

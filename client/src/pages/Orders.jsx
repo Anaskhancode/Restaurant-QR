@@ -101,7 +101,7 @@ const Orders = () => {
                   <p className="text-sm text-gray-400">Order Number</p>
                   <p className="font-semibold text-lg">#{order.orderNumber}</p>
                   <p className="text-xs text-gray-500 mt-1">
-                    Placed on {new Date(order.createdAt).toLocaleString()}
+                    Table No. - {order.tableNumber}
                   </p>
                 </div>
 

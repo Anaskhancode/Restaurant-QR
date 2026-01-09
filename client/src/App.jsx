@@ -22,6 +22,7 @@ import Dashboard from './pages/Dashboard';
 import AdminMenu from './pages/Menu';
 import AdminTables from './pages/Table';
 import AdminCoupan from './pages/AdminCoupan';
+import AdminOrders from './pages/AdminOrders';
 
 
 const App = () => {
@@ -44,7 +45,7 @@ const App = () => {
             <Route path="menu" element={<AdminMenu />} />
             <Route path="tables" element={<AdminTables />} />
             <Route path="coupans" element={<AdminCoupan />} />
-            {/* <Route path="orders" element={<AdminOrders />} /> */}
+            <Route path="orders" element={<AdminOrders />} />
           </Route>
 
           {/* ---------------- PUBLIC ---------------- */}

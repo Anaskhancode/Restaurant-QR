@@ -1,47 +1,56 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ShoppingBag,
   IndianRupee,
   BookOpen,
   Table,
+  Tag,
   ArrowRight,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-
-
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchRecentOrders } from '../redux/orderSlice.js';
+import { fetchDashboardStats } from '../redux/adminSlice.js';
 
 const Dashboard = () => {
-    // const totalMenuItems = useSelector(state => state.menu.allMenuItems.length);
-    const totalTables = useSelector(state=>state.table.tables.length);
-const stats = [
-  {
-    title: 'Total Orders',
-    value: '1,248',
-    icon: ShoppingBag,
-  },
-  {
-    title: 'Revenue',
-    value: '₹3,45,200',
-    icon: IndianRupee,
-  },
-  {
-    title: 'Menu Items',
-    value: '49',
-    icon: BookOpen,
-  },
-  {
-    title: 'Active Tables',
-    value: totalTables||'12',
-    icon: Table,
-  },
-];
+  const dispatch = useDispatch();
 
-const recentOrders = [
-  { id: '#ORD-1023', customer: 'Table 4', amount: '₹850', status: 'Completed' },
-  { id: '#ORD-1024', customer: 'Table 2', amount: '₹420', status: 'Pending' },
-  { id: '#ORD-1025', customer: 'Online', amount: '₹1,240', status: 'Preparing' },
-];
+  const { recentOrders } = useSelector((state) => state.order);
+  const { stats = {}, loading } = useSelector((state) => state.admin);
+
+
+  useEffect(() => {
+    dispatch(fetchRecentOrders());
+    dispatch(fetchDashboardStats());
+  }, [dispatch]);
+
+  const statCards = [
+    {
+      title: 'Total Orders',
+      value: stats.totalOrders,
+      icon: ShoppingBag,
+    },
+    {
+      title: 'Revenue',
+      value: `₹${stats.totalRevenue}`,
+      icon: IndianRupee,
+    },
+    {
+      title: 'Menu Items',
+      value: stats.totalMenuItems,
+      icon: BookOpen,
+    },
+    {
+      title: 'Active Tables',
+      value: stats.totalTables,
+      icon: Table,
+    },
+    {
+      title: 'Active Coupons',
+      value: stats.totalActiveCoupans,
+      icon: Tag,
+    },
+  ];
 
   return (
     <div className="space-y-10">
@@ -51,13 +60,13 @@ const recentOrders = [
           Dashboard
         </h1>
         <p className="text-gray-400">
-          Overview of your restaurant performance
+          Real-time overview of your restaurant
         </p>
       </div>
 
       {/* ================= STATS ================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((item, index) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        {statCards.map((item, index) => (
           <div
             key={index}
             className="bg-gray-900/50 border border-gray-800 rounded-xl p-6 flex items-center justify-between hover:border-gray-700 transition"
@@ -65,7 +74,7 @@ const recentOrders = [
             <div>
               <p className="text-sm text-gray-400">{item.title}</p>
               <h3 className="text-2xl font-bold text-white mt-1">
-                {item.value}
+                {loading ? '...' : item.value}
               </h3>
             </div>
             <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center">
@@ -77,15 +86,19 @@ const recentOrders = [
 
       {/* ================= MAIN GRID ================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
         {/* -------- Recent Orders -------- */}
         <div className="lg:col-span-2 bg-gray-900/50 border border-gray-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white">
               Recent Orders
             </h2>
-            <button className="text-sm text-gray-400 hover:text-white flex items-center gap-1">
+            <Link
+              to="/admin/orders"
+              className="text-sm text-gray-400 hover:text-white flex items-center gap-1"
+            >
               View All <ArrowRight className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
 
           <div className="overflow-x-auto">
@@ -99,25 +112,33 @@ const recentOrders = [
                 </tr>
               </thead>
               <tbody>
-                {recentOrders.map((order, index) => (
+                {recentOrders.map((order) => (
                   <tr
-                    key={index}
+                    key={order._id}
                     className="border-b border-gray-800 last:border-none"
                   >
-                    <td className="py-3 text-white">{order.id}</td>
-                    <td className="py-3 text-gray-300">{order.customer}</td>
-                    <td className="py-3 text-white">{order.amount}</td>
+                    <td className="py-3 text-white">
+                      {order.orderNumber}
+                    </td>
+                    <td className="py-3 text-gray-300">
+                      {order.customerName || `Table ${order.tableNumber}`}
+                    </td>
+                    <td className="py-3 text-white">
+                      ₹{order.finalAmount}
+                    </td>
                     <td className="py-3">
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium ${
-                          order.status === 'Completed'
+                          order.orderStatus === 'served'
                             ? 'bg-green-500/10 text-green-400'
-                            : order.status === 'Pending'
+                            : order.orderStatus === 'pending'
                             ? 'bg-yellow-500/10 text-yellow-400'
-                            : 'bg-blue-500/10 text-blue-400'
+                            : order.orderStatus === 'preparing'
+                            ? 'bg-blue-500/10 text-blue-400'
+                            : 'bg-gray-500/10 text-gray-300'
                         }`}
                       >
-                        {order.status}
+                        {order.orderStatus}
                       </span>
                     </td>
                   </tr>
@@ -133,9 +154,21 @@ const recentOrders = [
             Quick Actions
           </h2>
 
-         <Link to={'/admin/menu'} className='block'><ActionButton label="Add New Menu Item" /></Link>
-         <Link to={'/admin/orders'} className='block'> <ActionButton label="Manage Orders" /></Link>
-         <Link to={'/admin/tables'} className='block'> <ActionButton label="Manage Tables" /></Link>
+          <Link to="/admin/menu" className="block">
+            <ActionButton label="Add New Menu Item" />
+          </Link>
+
+          <Link to="/admin/orders" className="block">
+            <ActionButton label="Manage Orders" />
+          </Link>
+
+          <Link to="/admin/tables" className="block">
+            <ActionButton label="Manage Tables" />
+          </Link>
+
+          <Link to="/admin/coupans" className="block">
+            <ActionButton label="Manage Coupons" />
+          </Link>
         </div>
       </div>
     </div>
