@@ -13,11 +13,19 @@ import orderRoutes from './routes/order.route.js'
 import adminRoutes from './routes/admin.route.js'
 import dotenv from 'dotenv' ;
 dotenv.config() ;
+import http from "http";
+import { initSocket } from "./utils/socket.js";
 
 const app = express();
+const server = http.createServer(app);
+
+initSocket(server);
+
+
 app.use(cors(
   {
-    origin:['http://localhost:5173',]
+    origin:['http://localhost:5173',],
+    credentials: true
   }
 ))
 
@@ -60,7 +68,7 @@ app.use('/api/v1',adminRoutes)
 
 const PORT = 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 

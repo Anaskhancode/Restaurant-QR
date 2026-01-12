@@ -4,6 +4,7 @@ import User from '../models/user.js'
 import razorpay from '../config/razorpay.js';
 import crypto from 'crypto'
 import dotenv from 'dotenv'
+import { sendOrderUpdate } from '../utils/socket.js';
 dotenv.config();
 const calculateOrderNumber = () => {
   const date = Date.now();
@@ -382,6 +383,12 @@ export const updateOrderStatus = async (req, res, next) => {
         message: 'Order not found',
       });
     }
+    if (order.userId) {
+      console.log(order.userId.toString(),order.id,orderStatus);
+      
+      sendOrderUpdate(order.userId.toString(), order._id, orderStatus);
+    }
+
 
     res.status(200).json({
       success: true,

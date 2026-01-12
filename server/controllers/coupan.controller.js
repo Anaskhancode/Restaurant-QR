@@ -63,6 +63,7 @@ export const getAllCoupans = async (req, res) => {
         code: coupans.code,
         discountType: coupans.discountType,
         description: coupans.description,
+        discountValue: coupans.discountValue,
         discountAmount,
         isFirstOrder: coupans.isFirstOrder,
         minOrderAmount: coupans.minOrderAmount,

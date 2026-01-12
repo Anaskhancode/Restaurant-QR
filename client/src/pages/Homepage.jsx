@@ -4,6 +4,7 @@ import { fetchMenuItems, setSelectedCategory } from '../redux/menuSlice';
 import Hero from '../components/Hero';
 import { addToCart } from '../redux/cartSlice';
 import { useToast } from '../context/ToastContext';
+import { useSocket } from '../context/SocketContext';
 
 const LoadingSkeleton = () => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -26,7 +27,7 @@ const LoadingSkeleton = () => (
 const Homepage = () => {
   const dispatch = useDispatch();
   const toast = useToast();
-
+  const socket = useSocket();
   const {
     menuItems,
     categories,
@@ -38,6 +39,22 @@ const Homepage = () => {
   } = useSelector((state) => state.menu);
 
   const userId = useSelector((state) => state.auth.userId);
+
+  useEffect(() => {
+  if (!socket || !userId) return;
+
+  socket.emit("join-room", userId);
+
+  socket.on("order-status-update", (data) => {
+    toast.success(`Your order is now ${data.orderStatus}`);
+  });
+
+  return () => socket.off("order-status-update");
+
+}, [socket, userId]); // keep only these
+
+
+
 
   /* ================= FETCH MENU ================= */
   useEffect(() => {

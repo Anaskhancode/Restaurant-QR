@@ -233,7 +233,7 @@ const AdminCoupan = () => {
                     <td className="py-2 font-semibold">{c.code}</td>
                     <td>
                       {c.discountType === 'percentage'
-                        ? `${c.discountValue}%`
+                        ? `₹${c.discountValue}`
                         : `₹${c.discountValue}`}
                     </td>
                     <td>₹{c.minOrderAmount}</td>

@@ -24,10 +24,13 @@ import AdminTables from './pages/Table';
 import AdminCoupan from './pages/AdminCoupan';
 import AdminOrders from './pages/AdminOrders';
 
+import { SocketProvider } from "./context/SocketContext.jsx";
+
 
 const App = () => {
   return (
     <ToastProvider>
+      <SocketProvider>
       <Router>
         <Routes>
 
@@ -60,6 +63,7 @@ const App = () => {
 
         </Routes>
       </Router>
+      </SocketProvider>
     </ToastProvider>
   );
 };
